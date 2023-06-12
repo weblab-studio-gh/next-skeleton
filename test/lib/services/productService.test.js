@@ -1,36 +1,40 @@
-import productService from '@lib/services/productService';
-test('updates product data', async () => {
-  const data = {
-    id: 1,
-    name: 'Product 1',
-    price: 10,
-    category: 'Category 1',
-    subCategory: 'Subcategory 1',
-  };
-  const updatedData = {
-    name: 'Product 1 Updated',
-    price: 20,
-    category: 'Category 2',
-    subCategory: 'Subcategory 2',
-  };
-  const expectedProduct = {
-    id: 1,
-    name: 'Product 1 Updated',
-    price: 20,
-    category: 'Category 2',
-    subCategory: 'Subcategory 2',
-  };
-  const db = {
-    product: {
-      update: jest.fn().mockResolvedValue(expectedProduct),
-    },
-  };
-  const product = await productService.update(updatedData, db);
-  expect(product).toEqual(expectedProduct);
-  expect(db.product.update).toHaveBeenCalledWith({
-    where: {
-      id: data.id,
-    },
-    data: updatedData,
+import { create } from '@/lib/services/productService';
+
+describe('create', () => {
+  it('should create a new product', async () => {
+    // Mock the necessary dependencies and data
+    const db = {
+      product: {
+        create: jest.fn().mockResolvedValue({ id: 1 }),
+        update: jest.fn().mockResolvedValue({ id: 1 }),
+      },
+      productImage: {
+        create: jest.fn().mockResolvedValue({ id: 1 }),
+      },
+    };
+    const data = {
+      name: 'Test Product',
+      description: 'This is a test product',
+      price: 9.99,
+    };
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('description', data.description);
+    formData.append('price', data.price);
+    formData.append('imageFile', new File([''], 'test.jpg'));
+    formData.append('galleryFile', new File([''], 'test1.jpg'));
+    formData.append('galleryFile', new File([''], 'test2.jpg'));
+
+    // Call the create function with the mock data
+    const result = await create(formData, db);
+
+    // Assert that the necessary functions were called with the correct data
+    expect(db.product.create).toHaveBeenCalledWith({ data });
+    expect(db.productImage.create).toHaveBeenCalledTimes(3);
+    expect(db.product.update).toHaveBeenCalledWith({
+      where: { id: 1 },
+      data: { ...data, imageId: 1, gallery: [{ id: 1 }, { id: 1 }, { id: 1 }] },
+    });
+    expect(result).toEqual({ id: 1 });
   });
 });

@@ -8,7 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../app/api/auth/[...nextauth]/route";
 
 import { redirect } from "next/navigation";
-import MainPageLayout from "@/components/ui/containters/MainPageLayout";
+import MainPageLayout from "@/components/ui/containers/MainPageLayout";
 import SimpleNotification from "@/components/partials/notifications/SimpleNotification";
 const inter = Inter({ subsets: ["latin"] });
 import { sendMessageToAllClients } from "../../lib/utils/ws";

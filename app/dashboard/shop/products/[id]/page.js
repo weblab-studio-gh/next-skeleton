@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import EditProductForm from "./components/EditProductForm";
-import NarrowPageContainer from "@/components/ui/containters/NarrowPageContainer";
+import NarrowPageContainer from "@/components/ui/containers/NarrowPageContainer";
 
 import {
   create,

@@ -1,5 +1,5 @@
 import AppNav from "@/components/app_shell/appNav/AppNav";
-import NarrowPageContainer from "@/components/ui/containters/NarrowPageContainer";
+import NarrowPageContainer from "@/components/ui/containers/NarrowPageContainer";
 import { productTabs } from "@/constants/navigation";
 
 export default function layout({ children }) {

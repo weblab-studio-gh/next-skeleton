@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import AddCategoryForm from "./components/AddCategoryForm";
-import NarrowPageContainer from "@/components/ui/containters/NarrowPageContainer";
+import NarrowPageContainer from "@/components/ui/containers/NarrowPageContainer";
 
 import { create, getType } from "@/lib/services/productService";
 
