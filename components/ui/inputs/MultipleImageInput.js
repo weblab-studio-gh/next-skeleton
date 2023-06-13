@@ -1,7 +1,7 @@
-"use client";
-import Image from "next/image";
-import { useRef, useState, useEffect } from "react";
-import { convertToBase64 } from "@/lib/utils/utils";
+'use client';
+import Image from 'next/image';
+import { useRef, useState, useEffect } from 'react';
+import { convertToBase64 } from '@/lib/utils/utils';
 
 export default function MultipleImageInput({
   label,
@@ -27,24 +27,26 @@ export default function MultipleImageInput({
     );
     setGallery((prevGallery) => [...prevGallery, ...newGallery]);
   };
+
   useEffect(() => {
     console.log(gallery);
   }, [gallery]);
   useEffect(() => {
     console.log(removeGallery);
   }, [removeGallery]);
+
   const handleImageDelete = (index) => {
     setGallery((prevGallery) => {
       const newGallery = [...prevGallery];
       newGallery.splice(index, 1);
       return newGallery;
     });
+
     // add the ID's of the images to be deleted to the removeGallery state
     setRemoveGallery((prevRemoveGallery) => [
       ...(prevRemoveGallery || []),
       gallery[index].id,
     ]);
-
   };
 
   return (
@@ -60,20 +62,19 @@ export default function MultipleImageInput({
         <label
           htmlFor="multiple-file-upload"
           className="relative cursor-pointer rounded-md bg-primary-light dark:bg-primary-dark font-medium text-secondary-light dark:text-secondary-dark focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-light dark:focus-within:ring-primary-dark focus-within:ring-offset-2 hover:text-color-light dark:hover:text-color-dark"
-          style={{ width: "calc(33.33% - 4px)", height: 200 }}
+          style={{ width: 'calc(33.33% - 4px)', height: 200 }}
         >
           <Image
             ref={changeImageOnInputRef}
             src={
               gallery.length > 0
-                ? gallery[gallery.length - 1].path ||
-                  gallery[gallery.length - 1].src
-                : "https://avatars.githubusercontent.com/u/82118527"
+                ? gallery[gallery.length - 1].path || gallery[gallery.length - 1].src
+                : 'https://avatars.githubusercontent.com/u/82118527'
             }
             alt={label}
             width={300}
             height={200}
-            style={{ width: 300, height: 200, objectFit: "cover" }}
+            style={{ width: 300, height: 200, objectFit: 'cover' }}
             // cover photo
             name="galleryImg"
             className="rounded-t-md object-cover"
@@ -100,14 +101,14 @@ export default function MultipleImageInput({
                 alt={label}
                 width={100}
                 height={100}
-                style={{ width: 100, height: 100, objectFit: "cover" }}
+                style={{ width: 100, height: 100, objectFit: 'cover' }}
                 className="rounded-md object-cover"
               />
               <button
                 type="button"
                 className="absolute top-0 right-0 p-1 bg-red-500 rounded-full text-white"
                 onClick={() => handleImageDelete(index)}
-                style={{ transform: "translate(50%, -50%)" }}
+                style={{ transform: 'translate(50%, -50%)' }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

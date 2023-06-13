@@ -2,28 +2,31 @@ datasource db {
   provider = "sqlite"
   url      = "file:./dev.db"
 }
+
 generator client {
   provider = "prisma-client-js"
 }
+
 // ----AUTH---- //
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  
-  access_token       String?  
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -31,6 +34,7 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -38,6 +42,7 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
 // ----USERS---- //
 model User {
   id            String    @id @default(cuid())
@@ -47,18 +52,19 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  profile       Profile?  
+  profile       Profile?
   type          UserType? @relation(fields: [typeId], references: [id], onDelete: Cascade)
   typeId        String?
-  costumer      Costumer? 
-  staff         Staff? 
+  costumer      Costumer?
+  staff         Staff?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
+
 model Costumer {
-  id           String   @id @default(cuid())
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String @unique
+  id           String           @id @default(cuid())
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String           @unique
   appointments Appointment[]
   orders       Order[]
   transactions Transaction[]
@@ -66,415 +72,475 @@ model Costumer {
   projects     Project[]
   support      SupportRequest[]
 }
+
 model Staff {
-  id          String   @id @default(cuid())
-  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String @unique
-  company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  bio         String?
-  role        String?
-  tasks       Task[]
-
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  bio       String?
+  role      String?
+  tasks     Task[]
 }
+
 model UserType {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  users         User[]
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  users       User[]
 }
+
 model Profile {
-  id            String   @id @default(cuid())
-  userId        String   @unique // relation scalar field (used in the `@relation` attribute above)
-  firstName     String
-  lastName      String
-  phone         String
-  address       String
-  city          String
-  state         String
-  zip           String
-  country       String
-  posts         Post[]
-  integrations  Integration[]
-  company       Company?
-  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String        @id @default(cuid())
+  userId       String        @unique // relation scalar field (used in the `@relation` attribute above)
+  firstName    String
+  lastName     String
+  phone        String
+  address      String
+  city         String
+  state        String
+  zip          String
+  country      String
+  posts        Post[]
+  integrations Integration[]
+  company      Company?
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
 model Company {
-    id           String   @id @default(cuid())
-    name         String
-    address      String
-    city         String
-    state        String
-    zip          String
-    country      String
-    phone        String
-    email        String
-    website      String
-    logo         String
-    description  String
-    vat          String
-    profileId    String
-    profile      Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
-    staff        Staff[]
+  id          String  @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  state       String
+  zip         String
+  country     String
+  phone       String
+  email       String
+  website     String
+  logo        String
+  description String
+  vat         String
+  profileId   String
+  profile     Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  staff       Staff[]
 
-    @@unique([profileId])
-
+  @@unique([profileId])
 }
+
 model Integration {
-    id          String   @id @default(cuid())
-    name        String
-    description String
-    type        String
-    tumbnail    String
-    url         String
-    token       String
-    secret      String
-    profileId   String
-    profile     Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id          String  @id @default(cuid())
+  name        String
+  description String
+  type        String
+  tumbnail    String
+  url         String
+  token       String
+  secret      String
+  profileId   String
+  profile     Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-    @@unique([profileId])
+  @@unique([profileId])
 }
+
 // ----POSTS---- //
 model Post {
-  id          String   @id @default(cuid())
-  title       String
-  content     String?
-  author      Profile?    @relation(fields: [authorId], references: [id])
-  authorId    String?
-  categories  PostCategory[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  published   Boolean  @default(false)
+  id         String         @id @default(cuid())
+  title      String
+  content    String?
+  author     Profile?       @relation(fields: [authorId], references: [id])
+  authorId   String?
+  categories PostCategory[]
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  published  Boolean        @default(false)
 }
+
 model PostCategory {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  posts         Post[]
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  posts       Post[]
 }
+
 // ----PRODUCTS---- // --- SHOP ---- //
 model Product {
-  id              String   @id @default(cuid())
-  name            String  /// text
-  description     String?  /// textarea
-  price           String? /// number
-  quantity        String? /// number
-  barcode         String? /// text
-  sku             String? /// image
-  createdAt       DateTime        @default(now()) /// hidden
-  updatedAt       DateTime        @updatedAt /// hidden
-  published       Boolean         @default(false) /// boolean
-  order           Order[] /// hidden
-  category        ProductCategory[] /// list
-  subCategory     ProductSubCategory[] /// list
-  supplier        Supplier[] /// list
-  transaction     Transaction[] /// hidden
-  recipes         Recipe[] /// hidden
-  cart            Cart[] /// hidden
-  supplierOrders  SupplierOrder[] /// hidden
-  quote           Quote[] /// hidden
-  gallery         ProductImage[]  
-  image           ProductImage?   @relation(name:"Tumbnail",fields: [imageId], references: [id])
-  imageId         String?         @unique
-  variations      ProductVariation[] /// list
-} 
+  id             String               @id @default(cuid())
+  name           String /// text
+  description    String? /// textarea
+  price          String? /// number
+  quantity       String? /// number
+  barcode        String? /// text
+  sku            String? /// image
+  createdAt      DateTime             @default(now()) /// hidden
+  updatedAt      DateTime             @updatedAt /// hidden
+  published      Boolean              @default(false) /// boolean
+  order          Order[] /// hidden
+  category       ProductCategory[] /// list
+  subCategory    ProductSubCategory[] /// list
+  supplier       Supplier[] /// list
+  transaction    Transaction[] /// hidden
+  recipes        Recipe[] /// hidden
+  cart           Cart[] /// hidden
+  supplierOrders SupplierOrder[] /// hidden
+  quote          Quote[] /// hidden
+  gallery        ProductImage[]
+  image          ProductImage?        @relation(name: "Tumbnail", fields: [imageId], references: [id])
+  imageId        String?              @unique
+  variations     ProductVariation[]
+}
+
 model ProductImage {
-  id              String       @id @default(cuid())
-  name            String
-  description     String?
-  path            String // This stores a path to the image
-  productGallery  Product[]    
-  product         Product?     @relation(name:"Tumbnail")
+  id             String    @id @default(cuid())
+  name           String
+  description    String?
+  path           String // This stores a path to the image
+  productGallery Product[]
+  product        Product?  @relation(name: "Tumbnail")
 }
+
+model Variation {
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  attributes  Attribute[]
+  products    ProductVariation[]
+}
+
+model Attribute {
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  variation   Variation[]
+  products    ProductAttribute[]
+}
+
 model ProductVariation {
-  id                  String               @id @default(cuid())
-  name                String
-  description         String?
-  productId           String
-  product             Product              @relation(fields: [productId], references: [id]) // This sets up the relation to the Product model
-  variationAttributes VariationAttribute[] // This is a one-to-many relationship with the VariationAttribute model
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  productId   String
+  product     Product            @relation(fields: [productId], references: [id])
+  variation   Variation          @relation(fields: [variationId], references: [id])
+  variationId String
+  attributes  ProductAttribute[]
 }
-model VariationAttribute {
-  id                  String              @id @default(cuid())
-  name                String
-  description         String?
-  price               String?
-  quantity            String?
-  productVariationId  String
-  productVariation    ProductVariation    @relation(fields: [productVariationId], references: [id]) // This sets up the relation to the ProductVariation model
+
+model ProductAttribute {
+  id                 String           @id @default(cuid())
+  name               String
+  description        String?
+  price              String?
+  quantity           String?
+  barcode            String?
+  sku                String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  published          Boolean          @default(false)
+  productVariationId String           @unique
+  productVariation   ProductVariation @relation(fields: [productVariationId], references: [id])
+  attribute          Attribute        @relation(fields: [attributeId], references: [id])
+  attributeId        String
 }
-model ProductCategory{
-  id            String   @id @default(cuid())
+
+model ProductCategory {
+  id            String               @id @default(cuid())
   name          String
   description   String?
   product       Product[]
   subCategories ProductSubCategory[]
   type          ProductType[]
 }
+
 model ProductType {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  category      ProductCategory[]
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  category    ProductCategory[]
 }
+
 model ProductSubCategory {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  category      ProductCategory[]
-  products      Product[]
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  category    ProductCategory[]
+  products    Product[]
 }
+
 model Supplier {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  products      Product[]
-  address       String?
-  city          String?
-  state         String?
-  zip           String?
-  country       String?
-  phone         String?
-  email         String
-  website       String?
-  logo          String?
-  orders        SupplierOrder[]
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  products    Product[]
+  address     String?
+  city        String?
+  state       String?
+  zip         String?
+  country     String?
+  phone       String?
+  email       String
+  website     String?
+  logo        String?
+  orders      SupplierOrder[]
 }
+
 model Recipe {
-  id            String   @id @default(cuid())
-  products      Product[]
-  ingredients   Ingredient[]
-  amount        Int
+  id          String       @id @default(cuid())
+  products    Product[]
+  ingredients Ingredient[]
+  amount      Int
 }
+
 model Ingredient {
-  id                String   @id @default(cuid())
+  id                String          @id @default(cuid())
   name              String
   description       String?
   measurementType   MeasurementType @relation(fields: [measurementTypeId], references: [id], onDelete: Cascade)
   measurementTypeId String
   quantity          Int
   recipes           Recipe[]
+}
 
-}
 model MeasurementType {
-  id            String   @id @default(cuid())
-  name          String
-  type          String
-  ingredients   Ingredient[]
+  id          String       @id @default(cuid())
+  name        String
+  type        String
+  ingredients Ingredient[]
 }
+
 //   ---- POS ---- //
 model Vat {
-  id            String   @id @default(cuid())
-  name          String
-  description   String
-  rate          String
-  transactions  Transaction[]
-  orders        Order[]
+  id           String        @id @default(cuid())
+  name         String
+  description  String
+  rate         String
+  transactions Transaction[]
+  orders       Order[]
 }
+
 model PaymentType {
-  id            String   @id @default(cuid())
-  name          String
-  description   String
-  transactions  Transaction[]
-  orders        Order[]
+  id           String        @id @default(cuid())
+  name         String
+  description  String
+  transactions Transaction[]
+  orders       Order[]
 }
+
 model Payment {
-  id            String   @id @default(cuid())
-  paymentId     String
-  customerId    String
-  transactions  Transaction[]
-  orders        Order[]
+  id           String        @id @default(cuid())
+  paymentId    String
+  customerId   String
+  transactions Transaction[]
+  orders       Order[]
 }
+
 model Transaction {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   total         String
   products      Product[]
-  Vat           Vat @relation(fields: [vatId], references: [id], onDelete: Cascade)
+  Vat           Vat         @relation(fields: [vatId], references: [id], onDelete: Cascade)
   vatId         String
   paymentType   PaymentType @relation(fields: [paymentTypeId], references: [id], onDelete: Cascade)
   paymentTypeId String
-  costumer      Costumer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  costumer      Costumer?   @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId    String
-  payment       Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  payment       Payment     @relation(fields: [paymentId], references: [id], onDelete: Cascade)
   paymentId     String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
+
 model Order {
-  id            String   @id @default(cuid())
-  total         String 
+  id            String      @id @default(cuid())
+  total         String
   products      Product[]
-  payment       Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  payment       Payment     @relation(fields: [paymentId], references: [id], onDelete: Cascade)
   paymentId     String
   paymentType   PaymentType @relation(fields: [paymentTypeId], references: [id], onDelete: Cascade)
   paymentTypeId String
-  vat           Vat @relation(fields: [vatId], references: [id], onDelete: Cascade)
+  vat           Vat         @relation(fields: [vatId], references: [id], onDelete: Cascade)
   vatId         String
-  costumer      Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
+  costumer      Costumer?   @relation(fields: [costumerId], references: [id], onDelete: Cascade)
   costumerId    String?
   status        OrderStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
   statusId      String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
+
 model Appointment {
-  id            String   @id @default(cuid())
-  title         String
-  description   String?
-  start         DateTime
-  end           DateTime
-  costumer      Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
-  costumerId    String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  start       DateTime
+  end         DateTime
+  costumer    Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
+  costumerId  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
+
 model Cart {
-  id            String   @id @default(cuid())
-  products      Product[]
-  total         String
-  costumer      Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
-  costumerId    String? @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id         String    @id @default(cuid())
+  products   Product[]
+  total      String
+  costumer   Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
+  costumerId String?   @unique
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
+
 model OrderStatus {
-  id            String   @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String
   description   String?
   orders        Order[]
   SupplierOrder SupplierOrder[]
 }
+
 // ---- STOCK ---- //
 model SupplierOrder {
-  id            String   @id @default(cuid())
-  products      Product[]
-  total         String
-  supplier      Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  supplierId    String
-  status        OrderStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
-  statusId      String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id         String      @id @default(cuid())
+  products   Product[]
+  total      String
+  supplier   Supplier    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplierId String
+  status     OrderStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId   String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
+
 // ---- PROJECT MANAGEMENT ---- //
 model Project {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  tasks         Task[]
-  contracts     Contracts[]
-  invoices      Invoices[]
-  costumer      Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
-  costumerId    String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  tasks       Task[]
+  contracts   Contracts[]
+  invoices    Invoices[]
+  costumer    Costumer?   @relation(fields: [costumerId], references: [id], onDelete: Cascade)
+  costumerId  String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
-model Task {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  todos         Todos[]
-  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId     String
-  assignedTo    Staff? @relation(fields: [assignedToId], references: [id], onDelete: Cascade)
-  assignedToId  String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  attachments   Attachment[]
-  status        TaskStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
-  statusId      String
-  request       SupportRequest?
-}
-model TaskStatus {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  tasks         Task[]
 
+model Task {
+  id           String          @id @default(cuid())
+  name         String
+  description  String?
+  todos        Todos[]
+  project      Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId    String
+  assignedTo   Staff?          @relation(fields: [assignedToId], references: [id], onDelete: Cascade)
+  assignedToId String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  attachments  Attachment[]
+  status       TaskStatus      @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId     String
+  request      SupportRequest?
 }
+
+model TaskStatus {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  tasks       Task[]
+}
+
 model TodoStatus {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  todos         Todos[]
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  todos       Todos[]
 }
+
 model Todos {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  task          Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  taskId        String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  status        TodoStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
-  statusId      String
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  task        Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId      String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  status      TodoStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId    String
 }
+
 model Attachment {
-  id            String   @id @default(cuid())
-  name          String
-  data          String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  task          Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  taskId        String
-  type          AttachmentType @relation(fields: [typeId], references: [id], onDelete: Cascade)
-  typeId        String
+  id        String         @id @default(cuid())
+  name      String
+  data      String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  task      Task           @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+  type      AttachmentType @relation(fields: [typeId], references: [id], onDelete: Cascade)
+  typeId    String
 }
+
 model AttachmentType {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  attachments   Attachment[]
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  attachments Attachment[]
 }
+
 model Contracts {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId     String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
+
 model Invoices {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId     String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
+
 //  --- CRM --- //
 model Lead {
-  id            String   @id @default(cuid())
-  name          String
-  email         String
-  phone         String
+  id    String @id @default(cuid())
+  name  String
+  email String
+  phone String
 }
-model Quote {
-  id            String   @id @default(cuid())
-  name          String
-  email         String
-  phone         String
-  message       String
-  products      Product[]
 
+model Quote {
+  id       String    @id @default(cuid())
+  name     String
+  email    String
+  phone    String
+  message  String
+  products Product[]
 }
+
 model ContactForm {
-  id            String   @id @default(cuid())
-  name          String
-  email         String
-  phone         String
-  message       String
+  id      String @id @default(cuid())
+  name    String
+  email   String
+  phone   String
+  message String
 }
+
 model SupportRequest {
-  id            String   @id @default(cuid())
-  name          String
-  description   String?
-  costumer      Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
-  costumerId    String?
-  Task          Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  taskId        String? @unique
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  costumer    Costumer? @relation(fields: [costumerId], references: [id], onDelete: Cascade)
+  costumerId  String?
+  Task        Task?     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId      String?   @unique
 }

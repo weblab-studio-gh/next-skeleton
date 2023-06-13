@@ -1,11 +1,11 @@
-"use client";
-import Image from "next/image";
-import { useRef, useState } from "react";
-import { convertToBase64 } from "@/lib/utils/utils";
+'use client';
+import Image from 'next/image';
+import { useRef, useState } from 'react';
+import { convertToBase64 } from '@/lib/utils/utils';
 export default function ImageInput({ label, multiple = false, name, src }) {
   const changeImageOnInputRef = useRef(null);
   const [image, setImage] = useState(src);
-  const [imageFile, setImageFile] = useState(src);
+  const [imageFile, setImageFile] = useState();
 
   return (
     <div className="sm:col-span-6">
@@ -25,13 +25,11 @@ export default function ImageInput({ label, multiple = false, name, src }) {
             >
               <Image
                 ref={changeImageOnInputRef}
-                src={
-                  image || "https://avatars.githubusercontent.com/u/82118527"
-                }
+                src={image || 'https://avatars.githubusercontent.com/u/82118527'}
                 alt={label}
                 width={300}
                 height={200}
-                style={{ width: 300, height: 200, objectFit: "cover" }}
+                style={{ width: 300, height: 200, objectFit: 'cover' }}
                 // cover photo
                 name="imageFile"
                 className="rounded-t-md object-cover  "
@@ -53,7 +51,7 @@ export default function ImageInput({ label, multiple = false, name, src }) {
                   }
                 }}
               />
-              <input type="hidden" name={name} value={imageFile} />
+              <input type="hidden" name={name} value={imageFile || src} />
             </label>
           </div>
         </div>
