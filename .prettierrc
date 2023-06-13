@@ -1,0 +1,6 @@
+{
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "function-call-argument-newline": "consistent",
+    "printWidth":90
+  }
