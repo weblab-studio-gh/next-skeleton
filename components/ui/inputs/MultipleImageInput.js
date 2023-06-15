@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useRef, useState, useEffect } from 'react';
-import { convertToBase64 } from '@/lib/utils/utils';
+import { convertToBase64 } from '@/utils/utils';
 
 export default function MultipleImageInput({
   label,

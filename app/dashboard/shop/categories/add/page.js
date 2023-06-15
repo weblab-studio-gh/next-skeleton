@@ -1,9 +1,9 @@
-import { Suspense } from "react";
+import { Suspense } from 'react';
 
-import AddCategoryForm from "./components/AddCategoryForm";
-import NarrowPageContainer from "@/components/ui/containers/NarrowPageContainer";
+import AddCategoryForm from './components/AddCategoryForm';
+import NarrowPageContainer from '@/components/ui/containers/NarrowPageContainer';
 
-import { create, getType } from "@/lib/services/productService";
+import { create, getType } from '@/utils/services/productService';
 
 export default async function Page() {
   return (

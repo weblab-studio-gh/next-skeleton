@@ -1,7 +1,7 @@
-import { Suspense } from "react";
+import { Suspense } from 'react';
 
-import AddProductForm from "./components/AddProductForm";
-import NarrowPageContainer from "@/components/ui/containers/NarrowPageContainer";
+import AddProductForm from './components/AddProductForm';
+import NarrowPageContainer from '@/components/ui/containers/NarrowPageContainer';
 
 import {
   create,
@@ -9,18 +9,16 @@ import {
   getSubCategory,
   getSupplier,
   update,
-} from "@/lib/services/productService";
+  getProductAttributes,
+  getVariations,
+  getProductVariations,
+} from '@/utils/services/productService';
 
 export default async function Page() {
   const categories = await getCategory();
   const subCategories = await getSubCategory();
   const suppliers = await getSupplier();
-
-  const postData = async (data) => {
-    "use server";
-    create(data);
-    console.log("data", data);
-  };
+  const variations = await getVariations();
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -30,7 +28,7 @@ export default async function Page() {
           subCategories={subCategories}
           suppliers={suppliers}
           handleCreate={create}
-          update={update}
+          variations={variations}
         />
       </NarrowPageContainer>
     </Suspense>

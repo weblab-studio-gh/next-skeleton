@@ -1,5 +1,5 @@
-import EmailSidebar from "@/components/partials/email/EmailSidebar";
-import handleMail from "@/lib/email";
+import EmailSidebar from '@/components/partials/email/EmailSidebar';
+import handleMail from '@/utils/email';
 import {
   Bars3Icon,
   CalendarIcon,
@@ -9,24 +9,24 @@ import {
   MegaphoneIcon,
   UserGroupIcon,
   XMarkIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
 const navigation = [
-  { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
-  { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-  { name: "Teams", href: "#", icon: UserGroupIcon, current: false },
+  { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
+  { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
+  { name: 'Teams', href: '#', icon: UserGroupIcon, current: false },
   {
-    name: "Directory",
-    href: "#",
+    name: 'Directory',
+    href: '#',
     icon: MagnifyingGlassCircleIcon,
     current: false,
   },
-  { name: "Announcements", href: "#", icon: MegaphoneIcon, current: false },
-  { name: "Office Map", href: "#", icon: MapIcon, current: false },
+  { name: 'Announcements', href: '#', icon: MegaphoneIcon, current: false },
+  { name: 'Office Map', href: '#', icon: MapIcon, current: false },
 ];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ');
 }
 {
   /* <EmailSidebar /> */

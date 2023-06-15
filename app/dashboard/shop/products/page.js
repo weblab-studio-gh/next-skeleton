@@ -1,21 +1,21 @@
-import Table from "@/components/data_display/table/Table";
-import { Suspense } from "react";
+import Table from '@/components/data_display/table/Table';
+import { Suspense } from 'react';
 
 import {
   columns,
   findMany,
   deleteOne,
   deleteMany,
-} from "@/lib/services/productService";
+} from '@/utils/services/productService';
 
 export default async function Page() {
   const products = await findMany();
   const cols = await columns();
 
   const content = {
-    title: "Products",
-    subtitle: "Add new products to your store",
-    description: "Manage your products",
+    title: 'Products',
+    subtitle: 'Add new products to your store',
+    description: 'Manage your products',
   };
 
   return (

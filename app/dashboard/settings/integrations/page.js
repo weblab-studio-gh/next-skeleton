@@ -10,25 +10,25 @@ import {
   QuestionMarkCircleIcon,
   UsersIcon,
   XMarkIcon,
-} from "@heroicons/react/24/outline";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import AppNav from "@/components/app_shell/appNav/AppNav";
+} from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
+import AppNav from '@/components/app_shell/appNav/AppNav';
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../../app/api/auth/[...nextauth]/route";
-import { prisma } from "@/lib/services/prisma";
-import { Prisma } from "@prisma/client";
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../@/app/api/auth/[...nextauth]/route';
+import { prisma } from '@/lib/services/prisma';
+import { Prisma } from '@prisma/client';
 
-import Image from "next/image";
-import ProfileForm from "@/components/partials/forms/ProfileForm";
-import ProfileField from "@/components/partials/profile/ProfileField";
+import Image from 'next/image';
+import ProfileForm from '@/components/partials/forms/ProfileForm';
+import ProfileField from '@/components/partials/profile/ProfileField';
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ');
 }
 export default async function Page() {
   const profileFields = Prisma.dmmf.datamodel.models
-    .find((model) => model.name === "Integration")
+    .find((model) => model.name === 'Integration')
 
     .fields.map((field) => {
       return {
@@ -57,14 +57,14 @@ export default async function Page() {
   });
 
   const createProfile = async (profile) => {
-    "use server";
+    'use server';
     // IF no profile exists, create one
     const res = await prisma.integration.create({
       data: {
         ...profile,
         profile: {
           connect: {
-            userId: user.id || "",
+            userId: user.id || '',
           },
         },
       },
@@ -72,11 +72,11 @@ export default async function Page() {
   };
 
   const saveProfile = async (profile) => {
-    "use server";
+    'use server';
     // check if profile exists
     const profileExists = await prisma.integration.findUnique({
       where: {
-        profileId: user.profile?.id || "",
+        profileId: user.profile?.id || '',
       },
     });
     // if profile does not exist, create one

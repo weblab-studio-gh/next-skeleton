@@ -1,17 +1,17 @@
-"use client";
-import { Fragment } from "react";
+'use client';
+import { Fragment } from 'react';
 
-import { XMarkIcon, ChevronDoubleLeftIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, ChevronDoubleLeftIcon } from '@heroicons/react/24/outline';
 
-import { Dialog, Transition } from "@headlessui/react";
-import { Disclosure } from "@headlessui/react";
+import { Dialog, Transition } from '@headlessui/react';
+import { Disclosure } from '@headlessui/react';
 
-import useThemeContext from "../../../context/theme/useContext";
-import { navigation } from "../../../constants/navigation";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
+import useThemeContext from '../../../context/theme/useContext';
+import { navigation } from '../../../constants/navigation';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ');
 }
 
 function NavItem({ item }) {
@@ -23,9 +23,9 @@ function NavItem({ item }) {
         href={item.href}
         className={classNames(
           item.current(pathName)
-            ? "border-l-2 border-primary-light dark:border-secondary-dark "
-            : "text-primary-light dark:text-primary-dark hover:border-l-2   ",
-          "transition transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium "
+            ? 'border-l-2 border-primary-light dark:border-secondary-dark '
+            : 'text-primary-light dark:text-primary-dark hover:border-l-2   ',
+          'transition transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium '
         )}
       >
         <item.icon
@@ -41,19 +41,15 @@ function NavItem({ item }) {
 function NavItemWithDropDownMenu({ item }) {
   const pathName = usePathname();
   return (
-    <Disclosure
-      defaultOpen={item.current(pathName)}
-      as="div"
-      className="space-y-1"
-    >
+    <Disclosure defaultOpen={item.current(pathName)} as="div" className="space-y-1">
       {({ open }) => (
         <>
           <Disclosure.Button
             className={classNames(
               item.current(pathName) || open
-                ? "border-l-2 border-primary-light dark:border-secondary-dark "
-                : "text-primary-light dark:text-primary-dark hover:border-l-2   ",
-              "transition transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium "
+                ? 'border-l-2 border-primary-light dark:border-secondary-dark '
+                : 'text-primary-light dark:text-primary-dark hover:border-l-2   ',
+              'transition transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium '
             )}
           >
             <item.icon
@@ -63,8 +59,8 @@ function NavItemWithDropDownMenu({ item }) {
             <span className="mr-auto">{item.name}</span>
             <svg
               className={classNames(
-                open ? " rotate-90" : "",
-                "mr-2 h-5 w-5 flex-shrink-0 transform transition-colors duration-150 ease-in-out "
+                open ? ' rotate-90' : '',
+                'mr-2 h-5 w-5 flex-shrink-0 transform transition-colors duration-150 ease-in-out '
               )}
               viewBox="0 0 20 20"
               aria-hidden="true"
@@ -72,15 +68,22 @@ function NavItemWithDropDownMenu({ item }) {
               <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
             </svg>
           </Disclosure.Button>
-          <Disclosure.Panel className="space-y-1">
-            {item.children.map((subItem, key) => (
-              <DropDownMenuItem
-                pathName={pathName}
-                key={key}
-                subItem={subItem}
-              />
-            ))}
-          </Disclosure.Panel>
+          <Transition
+            show={open}
+            className="overflow-hidden "
+            enter="transition transition-[max-height] duration-200 ease-in"
+            enterFrom="transform max-h-0"
+            enterTo="transform max-h-screen"
+            leave="transition transition-[max-height] duration-400 ease-out"
+            leaveFrom="transform max-h-screen"
+            leaveTo="transform max-h-0"
+          >
+            <Disclosure.Panel className="space-y-1 bg-primary-light dark:bg-primary-dark">
+              {item.children.map((subItem, key) => (
+                <DropDownMenuItem pathName={pathName} key={key} subItem={subItem} />
+              ))}
+            </Disclosure.Panel>
+          </Transition>
         </>
       )}
     </Disclosure>
@@ -99,9 +102,9 @@ function DropDownMenuItem({ subItem, pathName }) {
       href={subItem.href}
       className={classNames(
         subItem.current(pathName)
-          ? "border-l-4 border-primary-light dark:border-secondary-dark "
-          : "text-primary-light dark:text-primary-dark hover:border-l-4   ",
-        "transition transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium "
+          ? 'border-l-4 border-primary-light dark:border-secondary-dark '
+          : 'text-primary-light dark:text-primary-dark hover:border-l-4   ',
+        'transition transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium '
         //   ? "dark:bg-primary-dark bg-color-light text-primary-light dark:text-primary-dark"
         //   : "text-primary-light dark:text-primary-dark hover:bg-color-light dark:hover:bg-primary-dark",
         // "group transition ease-in-out duration-300 transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md"
@@ -184,14 +187,14 @@ function DesktopSidebar({ collapse, setCollapse }) {
   return (
     <div
       className={classNames(
-        collapse ? "w-14 " : "w-64 ",
-        "hidden md:flex transition-[width] duration-300 ease-in-out bg-secondary-light dark:bg-secondary-dark"
+        collapse ? 'w-14 ' : 'w-64 ',
+        'hidden md:flex transition-[width] duration-300 ease-in-out bg-secondary-light dark:bg-secondary-dark'
       )}
     >
       <div
         className={classNames(
-          collapse ? "w-[60px] " : "w-[221] ",
-          "flex h-[100%] flex-grow flex-col overflow-y-auto shadow pt-5 bg-secondary-light dark:bg-secondary-dark"
+          collapse ? 'w-[60px] ' : 'w-[221] ',
+          'flex h-[100%] flex-grow flex-col overflow-y-auto shadow pt-5 bg-secondary-light dark:bg-secondary-dark'
         )}
       >
         <div className="flex flex-shrink-0 items-center px-4">
@@ -233,11 +236,7 @@ export default function Sidebar() {
   return (
     <>
       <Transition.Root show={sidebarOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-40 md:hidden"
-          onClose={setSidebarOpen}
-        >
+        <Dialog as="div" className="relative z-40 md:hidden" onClose={setSidebarOpen}>
           <MobileSidebar setSidebarOpen={setSidebarOpen} />
           <div className="fixed inset-0 z-40 flex">
             <MobileSidebarPanel setSidebarOpen={setSidebarOpen} />

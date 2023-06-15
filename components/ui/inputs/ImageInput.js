@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
-import { convertToBase64 } from '@/lib/utils/utils';
+import { convertToBase64 } from '@/utils/utils';
 export default function ImageInput({ label, multiple = false, name, src }) {
   const changeImageOnInputRef = useRef(null);
   const [image, setImage] = useState(src);

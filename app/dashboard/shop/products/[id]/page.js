@@ -1,7 +1,7 @@
-import { Suspense } from "react";
+import { Suspense } from 'react';
 
-import EditProductForm from "./components/EditProductForm";
-import NarrowPageContainer from "@/components/ui/containers/NarrowPageContainer";
+import EditProductForm from './components/EditProductForm';
+import NarrowPageContainer from '@/components/ui/containers/NarrowPageContainer';
 
 import {
   create,
@@ -10,7 +10,7 @@ import {
   getSupplier,
   findOne,
   update,
-} from "@/lib/services/productService";
+} from '@/utils/services/productService';
 
 export default async function Page({ searchParams, params }) {
   const item = await findOne(params.id);

@@ -1,18 +1,18 @@
-"use client";
-import { useState, useEffect } from "react";
-import ThemeContext from "./context";
-import { ThemeProvider } from "next-themes";
-import SimpleNotification from "@/components/partials/notifications/SimpleNotification";
-import { SessionProvider } from "next-auth/react";
-import { useSession } from "next-auth/react";
+'use client';
+import { useState, useEffect } from 'react';
+import ThemeContext from './context';
+import { ThemeProvider } from 'next-themes';
+import SimpleNotification from '@/components/partials/notifications/SimpleNotification';
+import { SessionProvider } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 const ThemeContextProvider = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [notification, setNotification] = useState({
-    title: "",
-    message: "",
-    type: "",
+    title: '',
+    message: '',
+    type: '',
     show: false,
   });
   const [collapse, setCollapse] = useState(false);
@@ -20,7 +20,7 @@ const ThemeContextProvider = ({ children }) => {
   // TODO: Initialize and save collapse state from local storage
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       if (window.innerWidth <= 1280) {
         setSidebarOpen(false);
       }
@@ -30,16 +30,14 @@ const ThemeContextProvider = ({ children }) => {
   useEffect(() => {
     if (!session) return;
 
-    const socket = new WebSocket(
-      `ws://localhost:3000?userID=${session.user.id}`
-    );
+    const socket = new WebSocket(`ws://localhost:3000?userID=${session.user.id}`);
 
     socket.onopen = () => {
-      socket.send("hello");
+      socket.send('hello');
     };
 
     socket.onmessage = (event) => {
-      console.log("event", event);
+      console.log('event', event);
       let message = JSON.parse(event.data);
       setNotification({
         title: message.type,
@@ -54,31 +52,6 @@ const ThemeContextProvider = ({ children }) => {
     };
   }, [session]);
 
-  // useEffect(() => {
-  //   const isWindow = typeof window !== "undefined";
-  //   const ws = isWindow && new WebSocket("ws://localhost:8080");
-
-  //   ws.onopen = () => {
-  //     console.log("connected to server");
-  //   };
-
-  //   ws.onmessage = (event) => {
-  //     console.log(`Received: ${event.data}`);
-  //   };
-
-  //   ws.onerror = (error) => {
-  //     console.log(`WebSocket error: ${error}`);
-  //   };
-
-  //   ws.onclose = () => {
-  //     console.log("ws is closed");
-  //   };
-
-  //   return () => {
-  //     ws.close();
-  //   };
-  // }, []);
-
   return (
     <ThemeContext.Provider
       value={{
@@ -92,10 +65,7 @@ const ThemeContextProvider = ({ children }) => {
         setCollapse,
       }}
     >
-      <SimpleNotification
-        notification={notification}
-        setNotification={setNotification}
-      />
+      <SimpleNotification notification={notification} setNotification={setNotification} />
 
       {children}
     </ThemeContext.Provider>

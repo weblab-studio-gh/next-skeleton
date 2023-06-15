@@ -1,6 +1,10 @@
+// datasource db {
+//   provider = "sqlite"
+//   url      = "file:./dev.db"
+// }
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mysql"
+  url      = "mysql://root:root@localhost:3306/mydatabase"
 }
 
 generator client {
@@ -168,29 +172,29 @@ model PostCategory {
 
 // ----PRODUCTS---- // --- SHOP ---- //
 model Product {
-  id             String               @id @default(cuid())
-  name           String /// text
-  description    String? /// textarea
-  price          String? /// number
-  quantity       String? /// number
-  barcode        String? /// text
-  sku            String? /// image
-  createdAt      DateTime             @default(now()) /// hidden
-  updatedAt      DateTime             @updatedAt /// hidden
-  published      Boolean              @default(false) /// boolean
-  order          Order[] /// hidden
-  category       ProductCategory[] /// list
-  subCategory    ProductSubCategory[] /// list
-  supplier       Supplier[] /// list
-  transaction    Transaction[] /// hidden
-  recipes        Recipe[] /// hidden
-  cart           Cart[] /// hidden
-  supplierOrders SupplierOrder[] /// hidden
-  quote          Quote[] /// hidden
-  gallery        ProductImage[]
-  image          ProductImage?        @relation(name: "Tumbnail", fields: [imageId], references: [id])
-  imageId        String?              @unique
-  variations     ProductVariation[]
+  id               String               @id @default(cuid())
+  name             String /// text
+  description      String? /// textarea
+  price            String? /// number
+  quantity         String? /// number
+  barcode          String? /// text
+  sku              String? /// image
+  createdAt        DateTime             @default(now()) /// hidden
+  updatedAt        DateTime             @updatedAt /// hidden
+  published        Boolean              @default(false) /// boolean
+  order            Order[] /// hidden
+  category         ProductCategory[] /// list
+  subCategory      ProductSubCategory[] /// list
+  supplier         Supplier[] /// list
+  transaction      Transaction[] /// hidden
+  recipes          Recipe[] /// hidden
+  cart             Cart[] /// hidden
+  supplierOrders   SupplierOrder[] /// hidden
+  quote            Quote[] /// hidden
+  gallery          ProductImage[]
+  image            ProductImage?        @relation(name: "ProductImage", fields: [imageId], references: [id])
+  imageId          String?              @unique
+  ProductVariation ProductVariation[]
 }
 
 model ProductImage {
@@ -199,51 +203,40 @@ model ProductImage {
   description    String?
   path           String // This stores a path to the image
   productGallery Product[]
-  product        Product?  @relation(name: "Tumbnail")
-}
-
-model Variation {
-  id          String             @id @default(cuid())
-  name        String
-  description String?
-  attributes  Attribute[]
-  products    ProductVariation[]
-}
-
-model Attribute {
-  id          String             @id @default(cuid())
-  name        String
-  description String?
-  variation   Variation[]
-  products    ProductAttribute[]
+  product        Product?  @relation(name: "ProductImage")
 }
 
 model ProductVariation {
-  id          String             @id @default(cuid())
-  name        String
-  description String?
-  productId   String
-  product     Product            @relation(fields: [productId], references: [id])
-  variation   Variation          @relation(fields: [variationId], references: [id])
-  variationId String
-  attributes  ProductAttribute[]
+  id                      String                    @id @default(cuid())
+  variationId             String
+  productId               String
+  variation               Variation                 @relation(fields: [variationId], references: [id])
+  productVariationOptions ProductVariationOptions[]
+  product                 Product                   @relation(fields: [productId], references: [id])
+
+  @@unique([productId, variationId])
 }
 
-model ProductAttribute {
-  id                 String           @id @default(cuid())
-  name               String
-  description        String?
-  price              String?
-  quantity           String?
-  barcode            String?
-  sku                String?
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  published          Boolean          @default(false)
-  productVariationId String           @unique
-  productVariation   ProductVariation @relation(fields: [productVariationId], references: [id])
-  attribute          Attribute        @relation(fields: [attributeId], references: [id])
-  attributeId        String
+model ProductVariationOptions {
+  id          String           @id @default(cuid())
+  name        String
+  variation   ProductVariation @relation(fields: [variationId], references: [id])
+  variationId String
+}
+
+model Variation {
+  id               String             @id @default(cuid())
+  name             String
+  description      String?
+  variationOptions VariationOptions[]
+  productVariation ProductVariation[]
+}
+
+model VariationOptions {
+  id          String    @id @default(cuid())
+  name        String
+  variation   Variation @relation(fields: [variationId], references: [id])
+  variationId String
 }
 
 model ProductCategory {
