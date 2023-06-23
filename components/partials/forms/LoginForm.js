@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { getCsrfToken } from "next-auth/react";
-import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useEffect } from "react";
+import { getCsrfToken } from 'next-auth/react';
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useEffect } from 'react';
 
 export default function LoginForm({ handleSubmit }) {
   const [token, setToken] = useState();
@@ -22,7 +22,7 @@ export default function LoginForm({ handleSubmit }) {
           htmlFor="email"
           className="block text-sm font-medium bg-primary-light dark:bg-primary-dark text-primary-light dark:text-primary-dark"
         >
-          Email address
+          email
         </label>
         <div className="mt-1">
           <input
@@ -72,10 +72,7 @@ export default function LoginForm({ handleSubmit }) {
         </div>
 
         <div className="text-sm">
-          <a
-            href="#"
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
+          <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
             Forgot your password?
           </a>
         </div>

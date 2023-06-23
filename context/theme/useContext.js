@@ -1,7 +1,7 @@
-"use client";
-import ThemeContext from "./context";
-import { useTheme } from "next-themes";
-import { useContext } from "react";
+'use client';
+import ThemeContext from './context';
+import { useTheme } from 'next-themes';
+import { useContext } from 'react';
 
 const useThemeContext = () => {
   const { theme, setTheme } = useTheme();
@@ -14,6 +14,8 @@ const useThemeContext = () => {
     setSidebarOpen,
     notification,
     setNotification,
+    globalTransaction,
+    setGlobalTransaction,
   } = useContext(ThemeContext);
   return {
     theme,
@@ -26,6 +28,8 @@ const useThemeContext = () => {
     setDarkMode,
     setSidebarOpen,
     setNotification,
+    globalTransaction,
+    setGlobalTransaction,
   };
 };
 

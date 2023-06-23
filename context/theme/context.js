@@ -1,5 +1,5 @@
-"use client";
-import { createContext } from "react";
+'use client';
+import { createContext } from 'react';
 
 const ThemeContext = createContext({
   sidebarOpen: false,
@@ -7,14 +7,16 @@ const ThemeContext = createContext({
   darkMode: false,
   setDarkMode: () => {},
   notification: {
-    title: "",
-    message: "",
-    type: "",
+    title: '',
+    message: '',
+    type: '',
     show: false,
   },
   setNotification: () => {},
   collapse: false,
   setCollapse: () => {},
+  globalTransaction: {},
+  setGlobalTransaction: () => {},
 });
 
 export default ThemeContext;

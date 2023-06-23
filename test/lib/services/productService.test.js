@@ -1,4 +1,4 @@
-import { create } from '@/utils/services/productService';
+import { create } from '@/utils/services/product/productService';
 
 describe('create', () => {
   it('should create a new product', async () => {

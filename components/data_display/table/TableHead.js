@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef } from 'react';
 
 export default function TableHead({ columns, toggleAll, checked, checkbox }) {
   return (
@@ -13,15 +13,18 @@ export default function TableHead({ columns, toggleAll, checked, checkbox }) {
             onChange={toggleAll}
           />
         </th>
-        {columns.map((column, key) => (
-          <th
-            key={key}
-            scope="col"
-            className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-primary-light dark:text-primary-dark"
-          >
-            {column?.name}
-          </th>
-        ))}
+        {columns.map(
+          (column, key) =>
+            column.name !== 'id' && (
+              <th
+                key={key}
+                scope="col"
+                className="min-w-[8rem] py-3.5 pr-3 text-left text-sm font-semibold text-primary-light dark:text-primary-dark"
+              >
+                {column?.documentation}
+              </th>
+            )
+        )}
 
         <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
           <span className="sr-only">Edit</span>

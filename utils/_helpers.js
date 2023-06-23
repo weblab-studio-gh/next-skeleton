@@ -1,9 +1,12 @@
 'use server';
 import fs from 'fs-extra';
 import path from 'path';
-import { getServerSession } from 'next-auth';
+// import { getServerSession } from 'next-auth';
+import { useSession } from 'next-auth/react';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/utils/db';
+import { cookies, headers } from 'next/headers';
+import { getServerSession as originalGetServerSession } from 'next-auth';
 
 export async function saveImageToServer(file, filePath, folderPath) {
   const data = await file;
@@ -35,13 +38,34 @@ export async function saveImageToServer(file, filePath, folderPath) {
   return pathWithTypeName;
 }
 export async function sendNotification({ type, message }) {
-  const session = await getServerSession(authOptions);
+  const req = {
+    headers: Object.fromEntries(headers()),
+    cookies: Object.fromEntries(
+      cookies()
+        .getAll()
+        .map((c) => [c.name, c.value])
+    ),
+  };
+  const res = { getHeader() {}, setCookie() {}, setHeader() {} };
 
+  // @ts-ignore - The type used in next-auth for the req object doesn't match, but it still works
+  const session = await originalGetServerSession(req, res, authOptions);
+
+  // const session = getServerSession(authOptions);
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/send-message?type=${type}&message=${message}&userID=${session.user.id}`
+    await fetch(
+      // `http://localhost:3000/api/send-message?type=${type}&message=${message}&userID=${session.user.id}`
+      `https://ccb1-87-97-7-48.ngrok-free.app/api/send-message?type=${type}&message=${message}&userID=${session.user.id}`
     );
-    const data = await response.json();
+    // fetch with no cache
+    // await fetch(
+    //   `http://localhost:3000/api/send-message?type=${type}&message=${message}&userID=${session.user.id}`,
+    //   {
+    //     headers: {
+    //       'Cache-Control': 'no-cache',
+    //     },
+    //   }
+    // );
   } catch (err) {
     console.log('err', err);
   }
@@ -64,33 +88,10 @@ export async function formDataToObj(formData) {
     if (key.match(/\$ACTION_ID_*/)) {
       continue;
     }
-
     const value = formData.getAll(key); // Using getAll instead of get
     obj[key] = value.length > 1 ? value : value[0];
   }
   return obj;
-}
-export async function processSupplier(requestData, otherData) {
-  if (requestData?.supplier) {
-    otherData.supplier = {
-      set: {
-        id: requestData.supplier,
-      },
-    };
-  } else {
-    String(requestData?.supplier) === '' && delete otherData.supplier;
-  }
-}
-export async function processCreateSupplier(requestData, otherData) {
-  if (String(requestData?.supplier) !== '') {
-    otherData.supplier = {
-      connect: {
-        id: requestData.supplier,
-      },
-    };
-  } else {
-    String(requestData?.supplier) === '' && delete otherData.supplier;
-  }
 }
 export async function saveImage(file, updateData) {
   if (file?.size > 0) {
@@ -107,129 +108,6 @@ export async function saveImage(file, updateData) {
   }
 
   return null;
-}
-export async function connectCategories(category, subCategory, id, db) {
-  if (Array.isArray(category)) {
-    for (const cat of category) {
-      await db.product.update({
-        where: { id },
-        data: {
-          category: {
-            connect: {
-              id: cat,
-            },
-          },
-        },
-      });
-    }
-  } else if (category) {
-    await db.product.update({
-      where: { id },
-      data: {
-        category: {
-          connect: {
-            id: category,
-          },
-        },
-      },
-    });
-  }
-
-  if (Array.isArray(subCategory)) {
-    for (const cat of subCategory) {
-      await db.product.update({
-        where: { id },
-        data: {
-          subCategory: {
-            connect: {
-              id: cat,
-            },
-          },
-        },
-      });
-    }
-  } else if (subCategory) {
-    await db.product.update({
-      where: { id },
-      data: {
-        subCategory: {
-          connect: {
-            id: subCategory,
-          },
-        },
-      },
-    });
-  }
-}
-export async function disconnectCategory(categoryId, productId, db) {
-  if (Array.isArray(categoryId)) {
-    for (const cat of categoryId) {
-      await db.product.update({
-        where: { id: productId },
-        data: {
-          category: {
-            disconnect: {
-              id: cat,
-            },
-          },
-        },
-      });
-    }
-  } else if (categoryId) {
-    await db.product.update({
-      where: { id: productId },
-      data: {
-        category: {
-          disconnect: {
-            id: categoryId,
-          },
-        },
-      },
-    });
-  }
-}
-export async function disconnectSubCategory(subCategoryId, productId, db) {
-  if (Array.isArray(subCategoryId)) {
-    for (const cat of subCategoryId) {
-      await db.product.update({
-        where: { id: productId },
-        data: {
-          subCategory: {
-            disconnect: {
-              id: cat,
-            },
-          },
-        },
-      });
-    }
-  } else if (subCategoryId) {
-    await db.product.update({
-      where: { id: productId },
-      data: {
-        subCategory: {
-          disconnect: {
-            id: subCategoryId,
-          },
-        },
-      },
-    });
-  }
-}
-export async function disconnectGallery(removeGallery, productId, db) {
-  const product = await db.product.findUnique({
-    where: { id: productId },
-    include: { gallery: true },
-  });
-  const galleryIds = product.gallery.map((image) => image.id);
-  const removeIds = Array.isArray(removeGallery)
-    ? removeGallery.map((image) => image.id || image)
-    : removeGallery.split(',');
-  const filteredIds = removeIds.filter((id) => galleryIds.includes(id));
-  if (filteredIds.length > 1) {
-    await db.productImage.deleteMany({ where: { id: { in: filteredIds } } });
-  } else if (filteredIds.length === 1) {
-    await db.productImage.delete({ where: { id: filteredIds[0] } });
-  }
 }
 export async function saveGallery(filesArray, product) {
   if (filesArray[0].size > 0) {
@@ -279,6 +157,8 @@ export async function processFormData(data) {
     delete requestData.image;
     delete requestData.removeGallery;
     createData = requestData;
+
+    // if (createData.quantity) createData.quantity = Number(createData.quantity);
     return { createData, file, files, requestData, removeGallery };
   } else {
     return createData;
@@ -349,3 +229,149 @@ export async function handleRelations(
     });
   }
 }
+
+// export async function connectCategories(category, subCategory, id, db) {
+//   if (Array.isArray(category)) {
+//     for (const cat of category) {
+//       await db.product.update({
+//         where: { id },
+//         data: {
+//           category: {
+//             connect: {
+//               id: cat,
+//             },
+//           },
+//         },
+//       });
+//     }
+//   } else if (category) {
+//     await db.product.update({
+//       where: { id },
+//       data: {
+//         category: {
+//           connect: {
+//             id: category,
+//           },
+//         },
+//       },
+//     });
+//   }
+
+//   if (Array.isArray(subCategory)) {
+//     for (const cat of subCategory) {
+//       await db.product.update({
+//         where: { id },
+//         data: {
+//           subCategory: {
+//             connect: {
+//               id: cat,
+//             },
+//           },
+//         },
+//       });
+//     }
+//   } else if (subCategory) {
+//     await db.product.update({
+//       where: { id },
+//       data: {
+//         subCategory: {
+//           connect: {
+//             id: subCategory,
+//           },
+//         },
+//       },
+//     });
+//   }
+// }
+// export async function disconnectCategory(categoryId, productId, db) {
+//   if (Array.isArray(categoryId)) {
+//     for (const cat of categoryId) {
+//       await db.product.update({
+//         where: { id: productId },
+//         data: {
+//           category: {
+//             disconnect: {
+//               id: cat,
+//             },
+//           },
+//         },
+//       });
+//     }
+//   } else if (categoryId) {
+//     await db.product.update({
+//       where: { id: productId },
+//       data: {
+//         category: {
+//           disconnect: {
+//             id: categoryId,
+//           },
+//         },
+//       },
+//     });
+//   }
+// }
+// export async function disconnectSubCategory(subCategoryId, productId, db) {
+//   if (Array.isArray(subCategoryId)) {
+//     for (const cat of subCategoryId) {
+//       await db.product.update({
+//         where: { id: productId },
+//         data: {
+//           subCategory: {
+//             disconnect: {
+//               id: cat,
+//             },
+//           },
+//         },
+//       });
+//     }
+//   } else if (subCategoryId) {
+//     await db.product.update({
+//       where: { id: productId },
+//       data: {
+//         subCategory: {
+//           disconnect: {
+//             id: subCategoryId,
+//           },
+//         },
+//       },
+//     });
+//   }
+// }
+// export async function disconnectGallery(removeGallery, productId, db) {
+//   const product = await db.product.findUnique({
+//     where: { id: productId },
+//     include: { gallery: true },
+//   });
+//   const galleryIds = product.gallery.map((image) => image.id);
+//   const removeIds = Array.isArray(removeGallery)
+//     ? removeGallery.map((image) => image.id || image)
+//     : removeGallery.split(',');
+//   const filteredIds = removeIds.filter((id) => galleryIds.includes(id));
+//   if (filteredIds.length > 1) {
+//     await db.productImage.deleteMany({ where: { id: { in: filteredIds } } });
+//   } else if (filteredIds.length === 1) {
+//     await db.productImage.delete({ where: { id: filteredIds[0] } });
+//   }
+// }
+// export async function processSupplier(requestData, otherData) {
+//   if (requestData?.supplier) {
+//     otherData.supplier = {
+//       set: {
+//         id: requestData.supplier,
+//       },
+//     };
+//   } else {
+//     String(requestData?.supplier) === '' && delete otherData.supplier;
+//   }
+// }
+// export async function processCreateSupplier(requestData, otherData) {
+//   if (String(requestData?.supplier) !== '') {
+//     otherData.supplier = {
+//       connect: {
+//         id: requestData.supplier,
+//       },
+//     };
+//   } else {
+//     String(requestData?.supplier) === '' && delete otherData.supplier;
+//   }
+// }

@@ -11,8 +11,6 @@ export default function Page() {
           <h1 className="text-3xl text-center font-bold text-primary-light dark:text-primary-dark">
             Welcome to your Dashboard
           </h1>
-
-          <div className="flex items-center justify-center mt-4 space-x-3"></div>
         </div>
       </div>
     </main>

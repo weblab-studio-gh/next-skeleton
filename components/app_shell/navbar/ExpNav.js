@@ -1,31 +1,7 @@
-"use client";
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  const colors = require('tailwindcss/colors')
-  
-  module.exports = {
-    // ...
-    theme: {
-      extend: {
-        colors: {
-          sky: colors.sky,
-          teal: colors.teal,
-        },
-      },
-    },
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
-import { Fragment, useState } from "react";
-import { Disclosure, Menu, Switch, Transition } from "@headlessui/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+'use client';
+import { Fragment, useState } from 'react';
+import { Disclosure, Menu, Switch, Transition } from '@headlessui/react';
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import {
   Bars3Icon,
   BellIcon,
@@ -35,18 +11,18 @@ import {
   SquaresPlusIcon,
   UserCircleIcon,
   XMarkIcon,
-} from "@heroicons/react/24/outline";
-import { navigation } from "../../../constants/navigation";
-import Image from "next/image";
-import { useSession } from "next-auth/react";
-import DarkModeToggle from "@/components/ui/DarkModeToggle";
+} from '@heroicons/react/24/outline';
+import { navigation } from '../../../constants/navigation';
+import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+import DarkModeToggle from '@/components/ui/DarkModeToggle';
 
 const user = {
-  name: "Debbie Lewis",
-  handle: "deblewis",
-  email: "debbielewis@example.com",
+  name: 'Debbie Lewis',
+  handle: 'deblewis',
+  email: 'debbielewis@example.com',
   imageUrl:
-    "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=320&h=320&q=80",
+    'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=320&h=320&q=80',
 };
 // const navigation = [
 //   { name: "Dashboard", href: "#", current: true },
@@ -55,21 +31,21 @@ const user = {
 //   { name: "Company", href: "#", current: false },
 // ];
 const subNavigation = [
-  { name: "Profile", href: "#", icon: UserCircleIcon, current: true },
-  { name: "Account", href: "#", icon: CogIcon, current: false },
-  { name: "Password", href: "#", icon: KeyIcon, current: false },
-  { name: "Notifications", href: "#", icon: BellIcon, current: false },
-  { name: "Billing", href: "#", icon: CreditCardIcon, current: false },
-  { name: "Integrations", href: "#", icon: SquaresPlusIcon, current: false },
+  { name: 'Profile', href: '#', icon: UserCircleIcon, current: true },
+  { name: 'Account', href: '#', icon: CogIcon, current: false },
+  { name: 'Password', href: '#', icon: KeyIcon, current: false },
+  { name: 'Notifications', href: '#', icon: BellIcon, current: false },
+  { name: 'Billing', href: '#', icon: CreditCardIcon, current: false },
+  { name: 'Integrations', href: '#', icon: SquaresPlusIcon, current: false },
 ];
 const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: 'Your Profile', href: '#' },
+  { name: 'Settings', href: '#' },
+  { name: 'Sign out', href: '#' },
 ];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ');
 }
 
 export default function Navbar() {
@@ -84,8 +60,8 @@ export default function Navbar() {
         <>
           <nav
             className={classNames(
-              open ? "bg-sky-900" : "bg-transparent",
-              "relative z-10 border-b border-teal-500 border-opacity-25 lg:border-none lg:bg-transparent"
+              open ? 'bg-sky-900' : 'bg-transparent',
+              'relative z-10 border-b border-teal-500 border-opacity-25 lg:border-none lg:bg-transparent'
             )}
           >
             <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8 bg-secondary-light dark:bg-secondary-dark">
@@ -111,9 +87,9 @@ export default function Navbar() {
                               href={item.href}
                               className={classNames(
                                 item.current
-                                  ? "dark:bg-color2-dark bg-color-light text-primary-light dark:text-primary-dark"
-                                  : "text-primary-light dark:text-primary-dark hover:bg-color-light dark:hover:bg-color2-dark",
-                                "group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md"
+                                  ? 'dark:bg-color2-dark bg-color-light text-primary-light dark:text-primary-dark'
+                                  : 'text-primary-light dark:text-primary-dark hover:bg-color-light dark:hover:bg-color2-dark',
+                                'group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md'
                               )}
                             >
                               <item.icon
@@ -124,35 +100,28 @@ export default function Navbar() {
                             </a>
                           </div>
                         ) : (
-                          <Disclosure
-                            as="div"
-                            key={item.name}
-                            className="space-y-1"
-                          >
+                          <Disclosure as="div" key={item.name} className="space-y-1">
                             {({ open }) => (
                               <>
                                 <Disclosure.Button
                                   className={classNames(
                                     item.current || open
-                                      ? "dark:bg-color2-dark bg-color-light text-primary-light dark:text-primary-dark"
-                                      : "text-primary-light dark:text-primary-dark hover:bg-color-light dark:hover:bg-color2-dark",
-                                    "group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md"
+                                      ? 'dark:bg-color2-dark bg-color-light text-primary-light dark:text-primary-dark'
+                                      : 'text-primary-light dark:text-primary-dark hover:bg-color-light dark:hover:bg-color2-dark',
+                                    'group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md'
                                   )}
                                 >
                                   <svg
                                     className={classNames(
                                       open
-                                        ? "dark:bg-color2-dark bg-color-light text-primary-light dark:text-primary-dark"
-                                        : "text-primary-light dark:text-primary-dark hover:bg-color-light dark:hover:bg-color2-dark",
-                                      "mr-2 h-5 w-5 flex-shrink-0 transform transition-colors duration-150 ease-in-out group-hover:text-gray-400"
+                                        ? 'dark:bg-color2-dark bg-color-light text-primary-light dark:text-primary-dark'
+                                        : 'text-primary-light dark:text-primary-dark hover:bg-color-light dark:hover:bg-color2-dark',
+                                      'mr-2 h-5 w-5 flex-shrink-0 transform transition-colors duration-150 ease-in-out group-hover:text-gray-400'
                                     )}
                                     viewBox="0 0 20 20"
                                     aria-hidden="true"
                                   >
-                                    <path
-                                      d="M6 6L14 10L6 14V6Z"
-                                      fill="currentColor"
-                                    />
+                                    <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
                                   </svg>
                                   {item.name}
                                 </Disclosure.Button>
@@ -235,7 +204,7 @@ export default function Navbar() {
                             className="h-8 w-8 rounded-full"
                             width={32}
                             height={32}
-                            src={user.data?.user.image || "/images/avatar.png"}
+                            src={user.data?.user.image || '/images/avatar.png'}
                             alt=""
                           />
                         </Menu.Button>
@@ -256,8 +225,8 @@ export default function Navbar() {
                                 <a
                                   href={item.href}
                                   className={classNames(
-                                    active ? "bg-gray-100" : "",
-                                    "block py-2 px-4 text-sm text-gray-700"
+                                    active ? 'bg-gray-100' : '',
+                                    'block py-2 px-4 text-sm text-gray-700'
                                   )}
                                 >
                                   {item.name}
@@ -294,24 +263,21 @@ export default function Navbar() {
                           <Disclosure.Button
                             as="a"
                             className={classNames(
-                              item.current || open ? "" : "",
-                              "block rounded-md py-2 px-3 text-base font-medium text-primary-light dark:text-primary-dark hover:bg-secondary-light hover:text-secondary-light dark:hover:bg-primary-dark dark:hover:text-primary-dark"
+                              item.current || open ? '' : '',
+                              'block rounded-md py-2 px-3 text-base font-medium text-primary-light dark:text-primary-dark hover:bg-secondary-light hover:text-secondary-light dark:hover:bg-primary-dark dark:hover:text-primary-dark'
                             )}
                           >
                             <div className="flex items-center justify-between w-[100%]">
                               {item.name}
                               <svg
                                 className={classNames(
-                                  open ? "" : "",
-                                  "mr-2 h-5 w-5 flex-shrink-0 transform transition-colors duration-150 ease-in-out group-hover:text-gray-400"
+                                  open ? '' : '',
+                                  'mr-2 h-5 w-5 flex-shrink-0 transform transition-colors duration-150 ease-in-out group-hover:text-gray-400'
                                 )}
                                 viewBox="0 0 20 20"
                                 aria-hidden="true"
                               >
-                                <path
-                                  d="M6 6L14 10L6 14V6Z"
-                                  fill="currentColor"
-                                />
+                                <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
                               </svg>
                             </div>
                           </Disclosure.Button>
@@ -340,7 +306,7 @@ export default function Navbar() {
                       className="h-8 w-8 rounded-full"
                       width={32}
                       height={32}
-                      src={user.data?.user.image || "/images/avatar.png"}
+                      src={user.data?.user.image || '/images/avatar.png'}
                       alt=""
                     />
                   </div>

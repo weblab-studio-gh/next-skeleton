@@ -28,13 +28,6 @@ export default function MultipleImageInput({
     setGallery((prevGallery) => [...prevGallery, ...newGallery]);
   };
 
-  useEffect(() => {
-    console.log(gallery);
-  }, [gallery]);
-  useEffect(() => {
-    console.log(removeGallery);
-  }, [removeGallery]);
-
   const handleImageDelete = (index) => {
     setGallery((prevGallery) => {
       const newGallery = [...prevGallery];
@@ -50,7 +43,7 @@ export default function MultipleImageInput({
   };
 
   return (
-    <div className="sm:col-span-6">
+    <div className="sm:col-span-6 ">
       <label
         htmlFor="cover-photo"
         className="block text-sm font-medium text-primary-light dark:text-primary-dark"
@@ -61,8 +54,8 @@ export default function MultipleImageInput({
       <div className="mt-1 flex justify-between rounded-md border-2 border-dashed border-primary-light dark:border-primary-dark px-3 pt-2 pb-3 h-80 overflow-auto">
         <label
           htmlFor="multiple-file-upload"
-          className="relative cursor-pointer rounded-md bg-primary-light dark:bg-primary-dark font-medium text-secondary-light dark:text-secondary-dark focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-light dark:focus-within:ring-primary-dark focus-within:ring-offset-2 hover:text-color-light dark:hover:text-color-dark"
-          style={{ width: 'calc(33.33% - 4px)', height: 200 }}
+          className="relative  cursor-pointer rounded-md bg-primary-light dark:bg-primary-dark font-medium text-secondary-light dark:text-secondary-dark focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-light dark:focus-within:ring-primary-dark focus-within:ring-offset-2 hover:text-color-light dark:hover:text-color-dark"
+          // style={{ width: 'calc(33.33% - 4px)', height: 200 }}
         >
           <Image
             ref={changeImageOnInputRef}
@@ -72,9 +65,9 @@ export default function MultipleImageInput({
                 : 'https://avatars.githubusercontent.com/u/82118527'
             }
             alt={label}
-            width={300}
+            width={200}
             height={200}
-            style={{ width: 300, height: 200, objectFit: 'cover' }}
+            style={{ width: 200, height: 200, objectFit: 'cover' }}
             // cover photo
             name="galleryImg"
             className="rounded-t-md object-cover"

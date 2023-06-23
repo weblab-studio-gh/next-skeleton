@@ -11,7 +11,7 @@ export default function SelectInput({
 }) {
   return (
     <>
-      <label>{label}</label>
+      <label htmlFor={name}>{label}</label>
       <select
         form={form}
         name={name}
@@ -23,7 +23,7 @@ export default function SelectInput({
         multiple={multiple}
         onChange={onChange}
       >
-        {!multiple && <option value="">{'Selected: ' + data?.[0].name}</option>}
+        {!multiple && <option value="">{'Selected: ' + data?.[0]?.name}</option>}
         {options && options.length > 0
           ? options.map((cat) => (
               <option value={cat.id} key={cat.id} defaultValue={cat.id}>

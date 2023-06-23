@@ -4,7 +4,7 @@
 // }
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:root@localhost:3306/mydatabase"
+  url      = "mysql://wls:wls@localhost:3306/mydatabase"
 }
 
 generator client {
@@ -55,9 +55,10 @@ model User {
   emailVerified DateTime?
   image         String?
   accounts      Account[]
+  password      String?
   sessions      Session[]
   profile       Profile?
-  type          UserType? @relation(fields: [typeId], references: [id], onDelete: Cascade)
+  type          UserType  @default(COSTUMER)
   typeId        String?
   costumer      Costumer?
   staff         Staff?
@@ -90,11 +91,10 @@ model Staff {
   tasks     Task[]
 }
 
-model UserType {
-  id          String  @id @default(cuid())
-  name        String
-  description String?
-  users       User[]
+enum UserType {
+  ADMIN
+  COSTUMER
+  STAFF
 }
 
 model Profile {
@@ -170,40 +170,97 @@ model PostCategory {
   posts       Post[]
 }
 
+model Brand {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  products    Product[]
+  logo        Image     @relation(name: "BrandLogo", fields: [logoId], references: [id])
+  logoId      String    @unique
+}
+
 // ----PRODUCTS---- // --- SHOP ---- //
 model Product {
-  id               String               @id @default(cuid())
-  name             String /// text
-  description      String? /// textarea
-  price            String? /// number
-  quantity         String? /// number
-  barcode          String? /// text
-  sku              String? /// image
+  id String @id @default(cuid())
+
+  name        String /// Name
+  description String? /// Desc.
+
+  brand      Brand?  @relation(fields: [brandId], references: [id]) /// Brand
+  brandId    String? /// hidden
+  // Product Price Options
+  storePrice String? /// Store Price
+  webPrice   String? /// Web Price
+  costPrice  String? /// Cost Price
+
+  quantity String? /// Quantity
+  barcode  String? @unique /// Barcode
+  sku      String? /// Sku
+
+  weight    String? /// Weight
+  length    String? /// hidden
+  width     String? /// hidden
+  height    String? /// hidden
+  unit      UNIT?   @default(PIECE) /// Unit
+  published Boolean @default(false) /// Published
+
+  soldOut  Boolean @default(false) /// hidden
+  featured Boolean @default(false) /// hidden
+  onStore  Boolean @default(true) /// hidden
+  onWeb    Boolean @default(false) /// hidden
+
   createdAt        DateTime             @default(now()) /// hidden
   updatedAt        DateTime             @updatedAt /// hidden
-  published        Boolean              @default(false) /// boolean
   order            Order[] /// hidden
-  category         ProductCategory[] /// list
-  subCategory      ProductSubCategory[] /// list
-  supplier         Supplier[] /// list
+  category         ProductCategory[] /// Category
+  subCategory      ProductSubCategory[] /// Sub Category
+  supplier         Supplier[] /// Supplier
   transaction      Transaction[] /// hidden
   recipes          Recipe[] /// hidden
   cart             Cart[] /// hidden
   supplierOrders   SupplierOrder[] /// hidden
   quote            Quote[] /// hidden
-  gallery          ProductImage[]
-  image            ProductImage?        @relation(name: "ProductImage", fields: [imageId], references: [id])
-  imageId          String?              @unique
-  ProductVariation ProductVariation[]
+  gallery          Image[] /// hidden
+  image            Image?               @relation(name: "ProductImage", fields: [imageId], references: [id]) /// hidden
+  imageId          String?              @unique /// hidden
+  ProductVariation ProductVariation[] /// hidden
+  vat              VAT                  @default(VAT_0) /// hidden
 }
 
-model ProductImage {
+enum UNIT {
+  PIECE
+  KG
+  LITER
+}
+
+//  START___FOR F F&B BUSINESSES___ SOON ___ //
+model Recipe {
+  id          String       @id @default(cuid())
+  products    Product[]
+  ingredients Ingredient[]
+  amount      Int
+}
+
+model Ingredient {
+  id                String          @id @default(cuid())
+  name              String
+  description       String?
+  measurementType   MeasurementType @relation(fields: [measurementTypeId], references: [id], onDelete: Cascade)
+  measurementTypeId String
+  quantity          Int
+  recipes           Recipe[]
+}
+
+//  END___FOR F&B BUSINESSES___ SOON ___ //
+
+model Image {
   id             String    @id @default(cuid())
   name           String
   description    String?
   path           String // This stores a path to the image
   productGallery Product[]
   product        Product?  @relation(name: "ProductImage")
+  brand          Brand?    @relation(name: "BrandLogo")
 }
 
 model ProductVariation {
@@ -218,10 +275,27 @@ model ProductVariation {
 }
 
 model ProductVariationOptions {
-  id          String           @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
-  variation   ProductVariation @relation(fields: [variationId], references: [id])
-  variationId String
+  description String?
+
+  storePrice String? /// number
+  webPrice   String? /// number
+  costPrice  String? /// number
+
+  quantity String? /// number
+  barcode  String? /// text
+  sku      String? /// image
+
+  weight            String? /// number
+  length            String? /// number
+  width             String? /// number
+  height            String? /// number
+  // image       Image?
+  variation         ProductVariation @relation(fields: [variationId], references: [id])
+  variationId       String
+  variationOption   VariationOptions @relation(fields: [variationOptionId], references: [id])
+  variationOptionId String
 }
 
 model Variation {
@@ -233,10 +307,11 @@ model Variation {
 }
 
 model VariationOptions {
-  id          String    @id @default(cuid())
-  name        String
-  variation   Variation @relation(fields: [variationId], references: [id])
-  variationId String
+  id                      String                    @id @default(cuid())
+  name                    String
+  variation               Variation                 @relation(fields: [variationId], references: [id])
+  variationId             String
+  productVariationOptions ProductVariationOptions[]
 }
 
 model ProductCategory {
@@ -248,19 +323,19 @@ model ProductCategory {
   type          ProductType[]
 }
 
-model ProductType {
-  id          String            @id @default(cuid())
-  name        String
-  description String?
-  category    ProductCategory[]
-}
-
 model ProductSubCategory {
   id          String            @id @default(cuid())
   name        String
   description String?
   category    ProductCategory[]
   products    Product[]
+}
+
+model ProductType {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  category    ProductCategory[]
 }
 
 model Supplier {
@@ -280,23 +355,6 @@ model Supplier {
   orders      SupplierOrder[]
 }
 
-model Recipe {
-  id          String       @id @default(cuid())
-  products    Product[]
-  ingredients Ingredient[]
-  amount      Int
-}
-
-model Ingredient {
-  id                String          @id @default(cuid())
-  name              String
-  description       String?
-  measurementType   MeasurementType @relation(fields: [measurementTypeId], references: [id], onDelete: Cascade)
-  measurementTypeId String
-  quantity          Int
-  recipes           Recipe[]
-}
-
 model MeasurementType {
   id          String       @id @default(cuid())
   name        String
@@ -305,63 +363,89 @@ model MeasurementType {
 }
 
 //   ---- POS ---- //
-model Vat {
-  id           String        @id @default(cuid())
-  name         String
-  description  String
-  rate         String
-  transactions Transaction[]
-  orders       Order[]
+// model Vat {
+//   id           String        @id @default(cuid())
+//   name         String
+//   description  String
+//   rate         String
+//   transactions Transaction[]
+//   orders       Order[]
+// }
+enum VAT {
+  VAT_0
+  VAT_10
+  VAT_27
 }
 
-model PaymentType {
-  id           String        @id @default(cuid())
-  name         String
-  description  String
-  transactions Transaction[]
-  orders       Order[]
+enum PaymentType {
+  CASH
+  CARD
+  TRANSFER
 }
 
 model Payment {
   id           String        @id @default(cuid())
   paymentId    String
   customerId   String
+  type         PaymentType
   transactions Transaction[]
   orders       Order[]
 }
 
 model Transaction {
-  id            String      @id @default(cuid())
-  total         String
-  products      Product[]
-  Vat           Vat         @relation(fields: [vatId], references: [id], onDelete: Cascade)
-  vatId         String
-  paymentType   PaymentType @relation(fields: [paymentTypeId], references: [id], onDelete: Cascade)
-  paymentTypeId String
-  costumer      Costumer?   @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  customerId    String
-  payment       Payment     @relation(fields: [paymentId], references: [id], onDelete: Cascade)
-  paymentId     String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id         String    @id @default(cuid())
+  total      Int
+  netTotal   Int
+  totalVat   Int
+  products   Product[]
+  Vat        VAT       @default(VAT_0)
+  vatId      String
+  costumer   Costumer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String
+  payment    Payment   @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  paymentId  String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  total         String
-  products      Product[]
-  payment       Payment     @relation(fields: [paymentId], references: [id], onDelete: Cascade)
-  paymentId     String
-  paymentType   PaymentType @relation(fields: [paymentTypeId], references: [id], onDelete: Cascade)
-  paymentTypeId String
-  vat           Vat         @relation(fields: [vatId], references: [id], onDelete: Cascade)
-  vatId         String
-  costumer      Costumer?   @relation(fields: [costumerId], references: [id], onDelete: Cascade)
-  costumerId    String?
-  status        OrderStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
-  statusId      String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id         String      @id @default(cuid())
+  total      Int
+  netTotal   Int
+  totalVat   Int
+  shipping   Shipping?   @relation(fields: [shippingId], references: [id], onDelete: Cascade)
+  products   Product[]
+  payment    Payment     @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  Vat        VAT         @default(VAT_0)
+  costumer   Costumer?   @relation(fields: [costumerId], references: [id], onDelete: Cascade)
+  status     OrderStatus @default(PENDING)
+  paymentId  String
+  costumerId String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  shippingId String?
+  note       String?
+}
+
+model Shipping {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  fee         Int
+  data        Json?
+  orders      Order[]
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum SupplierOrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
 }
 
 model Appointment {
@@ -386,25 +470,17 @@ model Cart {
   updatedAt  DateTime  @updatedAt
 }
 
-model OrderStatus {
-  id            String          @id @default(cuid())
-  name          String
-  description   String?
-  orders        Order[]
-  SupplierOrder SupplierOrder[]
-}
-
 // ---- STOCK ---- //
 model SupplierOrder {
-  id         String      @id @default(cuid())
+  id         String              @id @default(cuid())
   products   Product[]
   total      String
-  supplier   Supplier    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplier   Supplier            @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   supplierId String
-  status     OrderStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  status     SupplierOrderStatus @default(PENDING)
   statusId   String
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
 }
 
 // ---- PROJECT MANAGEMENT ---- //

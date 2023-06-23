@@ -1,7 +1,26 @@
-"use client";
-import { signIn } from "next-auth/react";
-import LoginForm from "../../../components/partials/forms/LoginForm";
+'use client';
+import { signIn } from 'next-auth/react';
+import LoginForm from '../../../components/partials/forms/LoginForm';
+import { usePathname, useRouter } from 'next/navigation';
 export default function Page() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const { email, password } = event.target.elements;
+
+    await signIn('credentials', {
+      redirect: false,
+      email: email.value,
+      password: password.value,
+      action: 'credentials',
+      callbackUrl: `${pathname}/dashboard`,
+    }).then((res) => {
+      router.push(`/dashboard`);
+    });
+  };
+
   return (
     <>
       <div className="flex h-[100vh] bg-primary-light dark:bg-primary-dark text-primary-light dark:text-primary-dark">
@@ -12,11 +31,8 @@ export default function Page() {
                 Sign in to your account
               </h2>
               <p className="mt-2 text-sm bg-primary-light dark:bg-primary-dark text-primary-light dark:text-primary-dark">
-                Or{" "}
-                <a
-                  href="#"
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
+                Or{' '}
+                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
                   register a new account
                 </a>
               </p>
@@ -53,7 +69,7 @@ export default function Page() {
 
                     <div>
                       <a
-                        href="http://localhost:8000/api/auth/google/login/"
+                        href={`${pathname}/api/auth/google/login/`}
                         className="inline-flex w-full justify-center rounded-md border border-gray-300  py-2 px-4 text-sm font-medium bg-primary-light dark:bg-primary-dark text-primary-light dark:text-primary-dark shadow-sm hover:bg-gray-50"
                       >
                         <span className="sr-only">Sign in with Google</span>
@@ -65,8 +81,8 @@ export default function Page() {
                           className="bi bi-google"
                           viewBox="0 0 16 16"
                         >
-                          {" "}
-                          <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" />{" "}
+                          {' '}
+                          <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" />{' '}
                         </svg>
                       </a>
                     </div>
@@ -75,11 +91,11 @@ export default function Page() {
                       <a
                         onClick={(e) => {
                           e.preventDefault();
-                          signIn("github", {
-                            callbackUrl: "http://localhost:3000/dashboard",
+                          signIn('github', {
+                            callbackUrl: `${pathname}/dashboard`,
                           });
                         }}
-                        href="http://localhost:8000/api/auth/github/login/"
+                        href={`${pathname}/api/auth/github/login/`}
                         className="inline-flex w-full justify-center rounded-md border border-gray-300  py-2 px-4 text-sm font-medium bg-primary-light dark:bg-primary-dark text-primary-light dark:text-primary-dark shadow-sm hover:bg-gray-50"
                       >
                         <span className="sr-only">Sign in with GitHub</span>
@@ -101,10 +117,7 @@ export default function Page() {
                 </div>
 
                 <div className="relative mt-6">
-                  <div
-                    className="absolute inset-0 flex items-center"
-                    aria-hidden="true"
-                  >
+                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
                     <div className="w-full border-t border-gray-300" />
                   </div>
                   <div className="relative flex justify-center text-sm">
@@ -116,7 +129,7 @@ export default function Page() {
               </div>
 
               <div className="mt-6">
-                <LoginForm />
+                <LoginForm handleSubmit={handleSubmit} />
               </div>
             </div>
           </div>

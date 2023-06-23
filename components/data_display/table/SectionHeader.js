@@ -2,24 +2,32 @@ import {
   BarsArrowUpIcon,
   ChevronDownIcon,
   MagnifyingGlassIcon,
-} from "@heroicons/react/20/solid";
-import { Fragment, useEffect, useRef, useState } from "react";
-import { Menu, Transition } from "@headlessui/react";
+} from '@heroicons/react/20/solid';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { Menu, Transition } from '@headlessui/react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 export default function SectionHeader({ setSearch, setFilter, content }) {
   const sortMenu = [
-    { name: "Newest", href: "#" },
-    { name: "Oldest", href: "#" },
-    { name: "ASC", href: "#" },
-    { name: "DSC", href: "#" },
+    { name: 'Newest', href: '#' },
+    { name: 'Oldest', href: '#' },
+    { name: 'ASC', href: '#' },
+    { name: 'DSC', href: '#' },
   ];
+  const path = usePathname();
 
   return (
-    <div className="border-b p-8 border-primary-light dark:border-primary-dark pb-5 sm:flex sm:items-center sm:justify-between bg-primary-light dark:bg-primary-dark">
-      <h3 className="text-lg font-medium leading-6 text-primary-light dark:text-primary-dark">
-        {content.title}
-      </h3>
-      <div className="mt-3 sm:mt-0 sm:ml-4">
+    <div className="border-b py-6 flex md:justify-between  border-primary-light dark:border-primary-dark  sm:flex sm:items-center sm:justify-between bg-primary-light dark:bg-primary-dark">
+      {
+        <Link href={path + '/' + 'add'}>
+          <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-light dark:text-primary-dark bg-teal-light dark:bg-teal-dark hover:bg-secondary-light dark:hover:bg-secondary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Create New
+          </button>
+        </Link>
+      }
+
+      <div className=" sm:mt-0 sm:ml-4">
         <label htmlFor="mobile-search-candidate" className="sr-only">
           Search
         </label>
@@ -27,7 +35,7 @@ export default function SectionHeader({ setSearch, setFilter, content }) {
           Search
         </label>
         <div className="flex rounded-md shadow-sm">
-          <div className="relative flex-grow focus-within:z-10">
+          <div className="relative  flex-grow focus-within:z-10">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <MagnifyingGlassIcon
                 className="h-5 w-5 text-primary-light dark:text-primary-dark"
@@ -38,7 +46,7 @@ export default function SectionHeader({ setSearch, setFilter, content }) {
               type="text"
               name="mobile-search-candidate"
               id="mobile-search-candidate"
-              className="block w-full rounded-none rounded-l-md bg-primary-light dark:bg-primary-dark border-primary-light dark:border-primary-dark pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:hidden"
+              className="block w-full h-11 rounded-none rounded-l-md bg-primary-light dark:bg-primary-dark border-primary-light dark:border-primary-dark pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:hidden"
               placeholder="Search"
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -52,9 +60,9 @@ export default function SectionHeader({ setSearch, setFilter, content }) {
             />
           </div>
 
-          <Menu as="div" className="relative inline-block text-left ">
+          <Menu as="div" className="relative  inline-block text-left ">
             <div>
-              <Menu.Button className="relative -ml-px inline-flex items-center rounded-r-md border border-primary-light dark:border-primary-dark bg-secondary-light dark:bg-secondary-dark px-4 py-2 text-sm font-medium text-primary-light dark:text-primary-light hover:bg-secondary-light dark:hover:bg-secondary-dark focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+              <Menu.Button className="relative md:h-auto h-11 -ml-px inline-flex items-center rounded-r-md border border-primary-light dark:border-primary-dark bg-secondary-light dark:bg-secondary-dark px-4 py-2 text-sm font-medium text-primary-light dark:text-primary-light hover:bg-secondary-light dark:hover:bg-secondary-dark focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
                 <BarsArrowUpIcon
                   className="h-5 w-5 text-primary-light dark:text-primary-dark"
                   aria-hidden="true"
@@ -86,8 +94,8 @@ export default function SectionHeader({ setSearch, setFilter, content }) {
                           onClick={() => setFilter(item.name)}
                           className={`${
                             active
-                              ? "bg-color-light dark:bg-color-dark text-secondary-light dark:text-primary-dark"
-                              : "text-primary-light dark:text-primary-dark  "
+                              ? 'bg-color-light dark:bg-color-dark text-secondary-light dark:text-primary-dark'
+                              : 'text-primary-light dark:text-primary-dark  '
                           } group flex w-full items-center rounded-md px-2 py-2 text-sm  `}
                         >
                           {item.name}

@@ -14,7 +14,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-function NavItem({ item }) {
+function NavItem({ item, collapse }) {
   const pathName = usePathname();
 
   return (
@@ -25,20 +25,20 @@ function NavItem({ item }) {
           item.current(pathName)
             ? 'border-l-2 border-primary-light dark:border-secondary-dark '
             : 'text-primary-light dark:text-primary-dark hover:border-l-2   ',
-          'transition transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium '
+          'transition transform w-full flex items-center pl-2 pr-2 py-2 text-sm font-medium '
         )}
       >
         <item.icon
           className="mr-3 h-6 w-6 flex-shrink-0 text-primary-light dark:text-primary-dark"
           aria-hidden="true"
         />
-        {item.name}
+        {collapse ? null : <span className="mr-auto">{item.name}</span>}
       </a>
     </div>
   );
 }
 
-function NavItemWithDropDownMenu({ item }) {
+function NavItemWithDropDownMenu({ item, collapse }) {
   const pathName = usePathname();
   return (
     <Disclosure defaultOpen={item.current(pathName)} as="div" className="space-y-1">
@@ -49,14 +49,14 @@ function NavItemWithDropDownMenu({ item }) {
               item.current(pathName) || open
                 ? 'border-l-2 border-primary-light dark:border-secondary-dark '
                 : 'text-primary-light dark:text-primary-dark hover:border-l-2   ',
-              'transition transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium '
+              'transition transform w-full flex items-center pl-2 pr-2 py-2 text-sm font-medium '
             )}
           >
             <item.icon
               className="mr-3 h-6 w-6 flex-shrink-0 text-primary-light dark:text-primary-dark"
               aria-hidden="true"
             />
-            <span className="mr-auto">{item.name}</span>
+            {collapse ? null : <span className="mr-auto">{item.name}</span>}
             <svg
               className={classNames(
                 open ? ' rotate-90' : '',
@@ -104,7 +104,7 @@ function DropDownMenuItem({ subItem, pathName }) {
         subItem.current(pathName)
           ? 'border-l-4 border-primary-light dark:border-secondary-dark '
           : 'text-primary-light dark:text-primary-dark hover:border-l-4   ',
-        'transition transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium '
+        'transition transform w-full flex items-center pl-2 pr-2 py-2 text-sm font-medium '
         //   ? "dark:bg-primary-dark bg-color-light text-primary-light dark:text-primary-dark"
         //   : "text-primary-light dark:text-primary-dark hover:bg-color-light dark:hover:bg-primary-dark",
         // "group transition ease-in-out duration-300 transform w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md"
@@ -168,7 +168,7 @@ function MobileSidebarPanel({ setSidebarOpen }) {
         /> */}
         </div>
         <div className="mt-5 h-0 flex-1 overflow-y-auto">
-          <nav className="space-y-1 px-2">
+          <nav className="space-y-1 px-2 ">
             {navigation?.map((item, key) =>
               !item.children ? (
                 <NavItem key={key} item={item} />
@@ -194,7 +194,7 @@ function DesktopSidebar({ collapse, setCollapse }) {
       <div
         className={classNames(
           collapse ? 'w-[60px] ' : 'w-[221] ',
-          'flex h-[100%] flex-grow flex-col overflow-y-auto shadow pt-5 bg-secondary-light dark:bg-secondary-dark'
+          'flex h-[100%] overflow-hidden flex-grow flex-col overflow-y-auto shadow pt-5 bg-secondary-light dark:bg-secondary-dark'
         )}
       >
         <div className="flex flex-shrink-0 items-center px-4">
@@ -207,22 +207,25 @@ function DesktopSidebar({ collapse, setCollapse }) {
           /> */}
         </div>
         <div className="mt-5 flex flex-1 flex-col">
-          <nav className="flex-1 space-y-1 px-2 pb-4">
+          <nav className="flex-1 space-y-1 px-2 pb-4 md:mt-28 justify-center items-center">
             {navigation?.map((item, key) =>
               !item.children ? (
-                <NavItem key={key} item={item} />
+                <NavItem key={key} item={item} collapse={collapse} />
               ) : (
-                <NavItemWithDropDownMenu key={key} item={item} />
+                <NavItemWithDropDownMenu key={key} item={item} collapse={collapse} />
               )
             )}
           </nav>
         </div>
         <button
           onClick={() => setCollapse(!collapse)}
-          className="h-32 flex justify-around px-4 overflow-hidden"
+          // rotate icon if collapse is true
+          className={classNames(
+            collapse ? 'rotate-180' : 'rotate-0',
+            'transition mb-6 duration-300 ease-in-out transform overflow-hidden  w-full flex justify-center items-center py-2 text-primary-light dark:text-primary-dark hover:text-primary-light dark:hover:text-primary-dark'
+          )}
         >
           <ChevronDoubleLeftIcon className="h-6 w-6 text-primary-light dark:text-primary-dark" />
-          <span className="">Collapse sidebar</span>
         </button>
       </div>
     </div>

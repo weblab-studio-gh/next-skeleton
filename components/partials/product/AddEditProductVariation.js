@@ -4,14 +4,17 @@ import TextInput from '@/components/ui/inputs/TextInput';
 import SelectInput from '@/components/ui/inputs/SelectInput';
 import { PlusIcon } from '@heroicons/react/20/solid';
 import { Transition } from '@headlessui/react';
+import SetPrices from '@/app/dashboard/management/products/add/components/SetPrices';
 
-export default function AddEditProductVariation({ variations }) {
+export default function AddEditProductVariation({ variations, fieldValues = false }) {
   const initial = {
     variationId: '',
     attributeId: '',
     data: {
       name: '',
-      price: '',
+      webPrice: '',
+      storePrice: '',
+      costPrice: '',
       quantity: '',
       sku: '',
       barcode: '',
@@ -20,12 +23,8 @@ export default function AddEditProductVariation({ variations }) {
   const [newVariations, setNewVariations] = useState();
   // const [variation, setVariation] = useState();
   // const [attribute, setAttribute] = useState();
-  const [values, setValues] = useState([initial]);
+  const [values, setValues] = useState(fieldValues === false ? [initial] : fieldValues);
   const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    console.log('values', values);
-  }, [values]);
 
   return (
     <div className="dark:divide-secondary-dark bg-primary-light dark:bg-primary-dark overflow-hidden rounded-lg  shadow mt-6` divide-y  divide-secondary-light">
@@ -51,7 +50,6 @@ export default function AddEditProductVariation({ variations }) {
                     setValues((prev) => {
                       const newValues = [...prev];
                       newValues[index].variationId = e.target.value;
-                      console.log('newValues', newValues);
                       return newValues;
                     });
                   }}
@@ -75,7 +73,6 @@ export default function AddEditProductVariation({ variations }) {
                       setValues((prev) => {
                         const newValues = [...prev];
                         newValues[index].attributeId = e.target.value;
-                        console.log('newValues', newValues);
                         return newValues;
                       });
                     }}
@@ -88,9 +85,9 @@ export default function AddEditProductVariation({ variations }) {
               className="overflow-hidden "
               enter="transition transition-[height] duration-400 ease-in"
               enterFrom="transform h-0"
-              enterTo={`transform lg:h-[300px] h-[600px] `}
+              enterTo={`transform lg:h-[410px] h-[600px] `}
               leave="transition transition-[height] duration-400 ease-out"
-              leaveFrom={`transform h-[300px] `}
+              leaveFrom={`transform h-[410px] `}
               leaveTo="transform h-0"
             >
               {values[index].attributeId && values[index].variationId && (
@@ -113,23 +110,7 @@ export default function AddEditProductVariation({ variations }) {
                       value={values[index].data.name}
                     />
                   </div>
-                  <div className="sm:col-span-2">
-                    <TextInput
-                      form="ghostForm"
-                      label="Price"
-                      className="bg-primary-light w-full  invalid:animate-pulse dark:invalid:border-error-dark invalid:border-error-light  dark:bg-primary-dark rounded-md border-primary-light dark:border-primary-dark px-3 py-2 text-primary-light dark:text-primary-dark focus:outline-none focus:ring-primary-light dark:focus:ring-primary-dark focus:border-primary-light dark:focus:border-primary-dark "
-                      name="variationPrice"
-                      width="w-full "
-                      onChange={(e) => {
-                        setValues((prev) => {
-                          const newValues = [...prev];
-                          newValues[index].data.price = e.target.value;
-                          return newValues;
-                        });
-                      }}
-                      value={values[index].data.price}
-                    />
-                  </div>
+
                   <div className="sm:col-span-2">
                     <TextInput
                       form="ghostForm"
@@ -179,6 +160,58 @@ export default function AddEditProductVariation({ variations }) {
                         });
                       }}
                       value={values[index].data.sku}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <TextInput
+                      form="ghostForm"
+                      label="Cost Price"
+                      className="bg-primary-light w-full  invalid:animate-pulse dark:invalid:border-error-dark invalid:border-error-light  dark:bg-primary-dark rounded-md border-primary-light dark:border-primary-dark px-3 py-2 text-primary-light dark:text-primary-dark focus:outline-none focus:ring-primary-light dark:focus:ring-primary-dark focus:border-primary-light dark:focus:border-primary-dark "
+                      name="costPrice"
+                      width="w-full "
+                      onChange={(e) => {
+                        setValues((prev) => {
+                          const newValues = [...prev];
+                          newValues[index].data.costPrice = e.target.value;
+                          return newValues;
+                        });
+                      }}
+                      value={values[index].data.costPrice}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <TextInput
+                      form="ghostForm"
+                      label="Store Price"
+                      className="bg-primary-light w-full  invalid:animate-pulse dark:invalid:border-error-dark invalid:border-error-light  dark:bg-primary-dark rounded-md border-primary-light dark:border-primary-dark px-3 py-2 text-primary-light dark:text-primary-dark focus:outline-none focus:ring-primary-light dark:focus:ring-primary-dark focus:border-primary-light dark:focus:border-primary-dark "
+                      name="storePrice"
+                      width="w-full "
+                      onChange={(e) => {
+                        setValues((prev) => {
+                          const newValues = [...prev];
+                          newValues[index].data.storePrice = e.target.value;
+                          return newValues;
+                        });
+                      }}
+                      value={values[index].data.storePrice}
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <TextInput
+                      form="ghostForm"
+                      label="Web Price"
+                      className="bg-primary-light w-full  invalid:animate-pulse dark:invalid:border-error-dark invalid:border-error-light  dark:bg-primary-dark rounded-md border-primary-light dark:border-primary-dark px-3 py-2 text-primary-light dark:text-primary-dark focus:outline-none focus:ring-primary-light dark:focus:ring-primary-dark focus:border-primary-light dark:focus:border-primary-dark "
+                      name="webPrice"
+                      width="w-full "
+                      onChange={(e) => {
+                        setValues((prev) => {
+                          const newValues = [...prev];
+                          newValues[index].data.webPrice = e.target.value;
+                          return newValues;
+                        });
+                      }}
+                      value={values[index].data.webPrice}
                     />
                   </div>
                 </div>

@@ -5,10 +5,12 @@ import { ThemeProvider } from 'next-themes';
 import SimpleNotification from '@/components/partials/notifications/SimpleNotification';
 import { SessionProvider } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
+import { findFirst } from '@/utils/services/product/productService';
 
 const ThemeContextProvider = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [globalTransaction, setGlobalTransaction] = useState(null);
   const [notification, setNotification] = useState({
     title: '',
     message: '',
@@ -16,7 +18,7 @@ const ThemeContextProvider = ({ children }) => {
     show: false,
   });
   const [collapse, setCollapse] = useState(false);
-  const { data: session } = useSession();
+  const session = useSession();
   // TODO: Initialize and save collapse state from local storage
 
   useEffect(() => {
@@ -28,23 +30,54 @@ const ThemeContextProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (!session) return;
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then((registration) => console.log('scope is: ', registration.scope));
+    }
+  }, []);
 
-    const socket = new WebSocket(`ws://localhost:3000?userID=${session.user.id}`);
+  useEffect(() => {
+    if (!session.data?.user?.id) return;
+
+    const socket = new WebSocket(
+      `wss://ccb1-87-97-7-48.ngrok-free.app?userID=${session.data?.user?.id}`
+    );
+    // const socket = new WebSocket(`ws://localhost:3000?userID=${session.data?.user?.id}`);
 
     socket.onopen = () => {
-      socket.send('hello');
+      socket.send(
+        JSON.stringify({
+          hello: 'world',
+        })
+      );
     };
 
     socket.onmessage = (event) => {
-      console.log('event', event);
       let message = JSON.parse(event.data);
-      setNotification({
-        title: message.type,
-        message: message.message,
-        type: message.type,
-        show: true,
-      });
+
+      if (message.type === 'add_product') {
+        findFirst({
+          where: {
+            barcode: {
+              equals: message.message,
+            },
+          },
+        }).then((res) => {
+          setGlobalTransaction(res);
+          setNotification({
+            title: 'Product Added',
+            message: 'Product added to cart',
+          });
+        });
+      } else {
+        setNotification({
+          title: message.type,
+          message: message.message,
+          type: message.type,
+          show: true,
+        });
+      }
     };
 
     return () => {
@@ -61,6 +94,8 @@ const ThemeContextProvider = ({ children }) => {
         setDarkMode,
         notification,
         setNotification,
+        globalTransaction,
+        setGlobalTransaction,
         collapse,
         setCollapse,
       }}

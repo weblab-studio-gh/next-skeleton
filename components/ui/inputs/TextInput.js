@@ -18,6 +18,7 @@ export default function TextInput({
   readonly = false,
   onSubmit,
   form,
+  type = 'text',
 }) {
   const getClasses = () => {
     if (disabled) {
@@ -60,7 +61,7 @@ export default function TextInput({
             ' invalid:animate-pulse dark:invalid:border-error-dark invalid:border-error-light ' +
             width
           }
-          type="text"
+          type={type}
         />
 
         {error && (

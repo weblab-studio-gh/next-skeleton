@@ -1,16 +1,17 @@
-"use client";
-import { Disclosure } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
-import DarkModeToggle from "@/components/ui/DarkModeToggle";
+'use client';
+import { Disclosure } from '@headlessui/react';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import DarkModeToggle from '@/components/ui/DarkModeToggle';
 
 const navigation = [
-  { name: "Home", href: "/", current: true },
-  { name: "Contact", href: "/", current: false },
+  { name: 'Home', href: '/', current: true },
+  { name: 'Contact', href: '/', current: false },
+  { name: 'sale', href: 'pos/sale', current: false },
 ];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ');
 }
 
 export default function PublicNavbar() {
@@ -51,11 +52,11 @@ export default function PublicNavbar() {
                       href={item.href}
                       className={classNames(
                         item.current
-                          ? "bg-primary-light dark:bg-primary-dark text-primary-light dark:text-primary-dark"
-                          : "bg-secondary-light dark:bg-secondary-dark text-secondary-light dark:text-secondary-dark hover:bg-primary-light hover:text-primary-light dark:hover:bg-primary-dark dark:hover:text-primary-dark",
-                        "px-3 py-2 rounded-md text-sm font-medium"
+                          ? 'bg-primary-light dark:bg-primary-dark text-primary-light dark:text-primary-dark'
+                          : 'bg-secondary-light dark:bg-secondary-dark text-secondary-light dark:text-secondary-dark hover:bg-primary-light hover:text-primary-light dark:hover:bg-primary-dark dark:hover:text-primary-dark',
+                        'px-3 py-2 rounded-md text-sm font-medium'
                       )}
-                      aria-current={item.current ? "page" : undefined}
+                      aria-current={item.current ? 'page' : undefined}
                     >
                       {item.name}
                     </a>
