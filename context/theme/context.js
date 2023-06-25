@@ -15,8 +15,8 @@ const ThemeContext = createContext({
   setNotification: () => {},
   collapse: false,
   setCollapse: () => {},
-  globalTransaction: {},
-  setGlobalTransaction: () => {},
+  search: '',
+  setSearch: () => {},
 });
 
 export default ThemeContext;

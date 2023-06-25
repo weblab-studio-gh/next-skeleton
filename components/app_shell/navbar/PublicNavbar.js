@@ -7,7 +7,7 @@ import DarkModeToggle from '@/components/ui/DarkModeToggle';
 const navigation = [
   { name: 'Home', href: '/', current: true },
   { name: 'Contact', href: '/', current: false },
-  { name: 'sale', href: 'pos/sale', current: false },
+  { name: 'Login', href: '/api/auth/login', current: false },
 ];
 
 function classNames(...classes) {

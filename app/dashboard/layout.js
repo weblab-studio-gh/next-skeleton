@@ -10,12 +10,16 @@ import Navbar from '@/components/app_shell/navbar/Navbar';
 import Sidebar from '@/components/app_shell/sidebar/Sidebar';
 import MainPageLayout from '@/components/ui/containers/MainPageLayout';
 
+async function authUser() {
+  return await getServerSession(authOptions);
+}
+
 export default async function RootLayout({ children }) {
-  const session = await getServerSession(authOptions);
+  const session = await authUser();
+
   if (!session) {
     redirect('/login');
   }
-
   return (
     <html
       className="h-full bg-primary-light dark:bg-primary-dark overflow-hidden"

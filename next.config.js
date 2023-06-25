@@ -37,7 +37,7 @@ const withPwa = require('next-pwa')({
 
 module.exports = withPwa({
   experimental: {
-    serverActions: true,
+    // serverActions: true,
   },
 
   images: {

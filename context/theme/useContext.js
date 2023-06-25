@@ -14,8 +14,8 @@ const useThemeContext = () => {
     setSidebarOpen,
     notification,
     setNotification,
-    globalTransaction,
-    setGlobalTransaction,
+    search,
+    setSearch,
   } = useContext(ThemeContext);
   return {
     theme,
@@ -28,8 +28,8 @@ const useThemeContext = () => {
     setDarkMode,
     setSidebarOpen,
     setNotification,
-    globalTransaction,
-    setGlobalTransaction,
+    search,
+    setSearch,
   };
 };
 

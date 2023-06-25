@@ -13,7 +13,7 @@ export default function AppNav({ tabs }) {
       <div className="md:flex md:items-center md:justify-between"></div>
       <div className="mt-4">
         <div className=" sm:block">
-          <nav className="-mb-px flex space-x-8 py-2 items-center ">
+          <nav className="-mb-px flex md:space-x-8 md:py-2 items-center md:flex-row flex-col">
             {tabs.map((tab) => (
               <Link
                 key={tab.name}
@@ -21,7 +21,7 @@ export default function AppNav({ tabs }) {
                 className={classNames(
                   tab.href === params
                     ? ' border-secondary-light border:text-secondary-dark text-secondary-light dark:text-secondary-dark'
-                    : 'border-transparent  text-primary-light dark:text-primary-dark ',
+                    : 'border-transparent  text-primary-light dark:text-primary-dark hover:text-secondary-light dark:hover:text-secondary-dark hover:border-secondary-light dark:hover:border-secondary-dark',
                   'whitespace-nowrap w-full justify-center text-center py-3 px-1 border-b-2 items-center font-medium text-sm'
                 )}
                 aria-current={tab.current ? 'page' : undefined}

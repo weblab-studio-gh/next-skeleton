@@ -18,6 +18,8 @@ module.exports = {
         'primary-dark': '#4CAF50',
         'secondary-light': '#F4A261',
         'secondary-dark': '#E76F51',
+        'neutral-light': '#caccd1',
+        'neutral-dark': '#52565e',
       },
       backgroundColor: {
         'primary-light': '#f5f8fa',

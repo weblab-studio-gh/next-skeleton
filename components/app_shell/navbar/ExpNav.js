@@ -17,27 +17,6 @@ import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import DarkModeToggle from '@/components/ui/DarkModeToggle';
 
-const user = {
-  name: 'Debbie Lewis',
-  handle: 'deblewis',
-  email: 'debbielewis@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=320&h=320&q=80',
-};
-// const navigation = [
-//   { name: "Dashboard", href: "#", current: true },
-//   { name: "Jobs", href: "#", current: false },
-//   { name: "Applicants", href: "#", current: false },
-//   { name: "Company", href: "#", current: false },
-// ];
-const subNavigation = [
-  { name: 'Profile', href: '#', icon: UserCircleIcon, current: true },
-  { name: 'Account', href: '#', icon: CogIcon, current: false },
-  { name: 'Password', href: '#', icon: KeyIcon, current: false },
-  { name: 'Notifications', href: '#', icon: BellIcon, current: false },
-  { name: 'Billing', href: '#', icon: CreditCardIcon, current: false },
-  { name: 'Integrations', href: '#', icon: SquaresPlusIcon, current: false },
-];
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
   { name: 'Settings', href: '#' },

@@ -4,13 +4,11 @@ import ThemeContext from './context';
 import { ThemeProvider } from 'next-themes';
 import SimpleNotification from '@/components/partials/notifications/SimpleNotification';
 import { SessionProvider } from 'next-auth/react';
-import { useSession } from 'next-auth/react';
-import { findFirst } from '@/utils/services/product/productService';
 
 const ThemeContextProvider = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [search, setSearch] = useState('');
   const [darkMode, setDarkMode] = useState(false);
-  const [globalTransaction, setGlobalTransaction] = useState(null);
   const [notification, setNotification] = useState({
     title: '',
     message: '',
@@ -18,7 +16,6 @@ const ThemeContextProvider = ({ children }) => {
     show: false,
   });
   const [collapse, setCollapse] = useState(false);
-  const session = useSession();
   // TODO: Initialize and save collapse state from local storage
 
   useEffect(() => {
@@ -29,61 +26,61 @@ const ThemeContextProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/service-worker.js')
-        .then((registration) => console.log('scope is: ', registration.scope));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if ('serviceWorker' in navigator) {
+  //     navigator.serviceWorker
+  //       .register('/service-worker.js')
+  //       .then((registration) => console.log('scope is: ', registration.scope));
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    if (!session.data?.user?.id) return;
+  // useEffect(() => {
+  //   if (!session.data?.user?.id) return;
 
-    const socket = new WebSocket(
-      `wss://ccb1-87-97-7-48.ngrok-free.app?userID=${session.data?.user?.id}`
-    );
-    // const socket = new WebSocket(`ws://localhost:3000?userID=${session.data?.user?.id}`);
+  //   const socket = new WebSocket(
+  //     `wss://ccb1-87-97-7-48.ngrok-free.app?userID=${session.data?.user?.id}`
+  //   );
+  //   // const socket = new WebSocket(`ws://localhost:3000?userID=${session.data?.user?.id}`);
 
-    socket.onopen = () => {
-      socket.send(
-        JSON.stringify({
-          hello: 'world',
-        })
-      );
-    };
+  //   socket.onopen = () => {
+  //     socket.send(
+  //       JSON.stringify({
+  //         hello: 'world',
+  //       })
+  //     );
+  //   };
 
-    socket.onmessage = (event) => {
-      let message = JSON.parse(event.data);
+  //   socket.onmessage = (event) => {
+  //     let message = JSON.parse(event.data);
 
-      if (message.type === 'add_product') {
-        findFirst({
-          where: {
-            barcode: {
-              equals: message.message,
-            },
-          },
-        }).then((res) => {
-          setGlobalTransaction(res);
-          setNotification({
-            title: 'Product Added',
-            message: 'Product added to cart',
-          });
-        });
-      } else {
-        setNotification({
-          title: message.type,
-          message: message.message,
-          type: message.type,
-          show: true,
-        });
-      }
-    };
+  //     if (message.type === 'add_product') {
+  //       findFirst({
+  //         where: {
+  //           barcode: {
+  //             equals: message.message,
+  //           },
+  //         },
+  //       }).then((res) => {
+  //         setGlobalTransaction(res);
+  //         setNotification({
+  //           title: 'Product Added',
+  //           message: 'Product added to cart',
+  //         });
+  //       });
+  //     } else {
+  //       setNotification({
+  //         title: message.type,
+  //         message: message.message,
+  //         type: message.type,
+  //         show: true,
+  //       });
+  //     }
+  //   };
 
-    return () => {
-      socket.close();
-    };
-  }, [session]);
+  //   return () => {
+  //     socket.close();
+  //   };
+  // }, [session]);
 
   return (
     <ThemeContext.Provider
@@ -94,8 +91,9 @@ const ThemeContextProvider = ({ children }) => {
         setDarkMode,
         notification,
         setNotification,
-        globalTransaction,
-        setGlobalTransaction,
+
+        search,
+        setSearch,
         collapse,
         setCollapse,
       }}

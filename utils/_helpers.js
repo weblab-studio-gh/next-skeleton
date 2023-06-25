@@ -1,10 +1,7 @@
 'use server';
 import fs from 'fs-extra';
 import path from 'path';
-// import { getServerSession } from 'next-auth';
-import { useSession } from 'next-auth/react';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { db } from '@/utils/db';
 import { cookies, headers } from 'next/headers';
 import { getServerSession as originalGetServerSession } from 'next-auth';
 
@@ -14,30 +11,33 @@ export async function saveImageToServer(file, filePath, folderPath) {
     throw new Error('No file was uploaded');
   }
   if (!filePath) {
-    throw new Error('imagePath is required');
+    throw new Error('Path to file is required');
   }
   if (!folderPath) {
-    throw new Error('imageName is required');
+    throw new Error('Path to folder is required');
   }
   let imageTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
   if (!imageTypes.includes(data.type)) {
     throw new Error('invalid image type');
   }
-  const imageType = data.type.split('/')[1];
-  const pathWithTypeName = filePath + '.' + imageType;
-  let buffer = await data.arrayBuffer();
+  const imageType = data.type.split('/')[1]; //eg. image/png => png
+  const pathWithTypeName = filePath + '.' + imageType; //eg. /images/avatars/123.png
+  let buffer = await data.arrayBuffer(); //converts file to buffer
 
   if (!fs.existsSync(path.join(process.cwd(), folderPath))) {
+    //if folder doesn't exist, create it
     fs.mkdirSync(path.join(process.cwd(), folderPath));
   }
 
   await fs.writeFile(
+    //write file to server
     path.join(process.cwd(), 'public/', pathWithTypeName),
     Buffer.from(buffer)
   );
-  return pathWithTypeName;
+  return pathWithTypeName; //return path to file
 }
-export async function sendNotification({ type, message }) {
+
+export async function sendToWebsocket({ type, message }) {
   const req = {
     headers: Object.fromEntries(headers()),
     cookies: Object.fromEntries(
@@ -49,38 +49,15 @@ export async function sendNotification({ type, message }) {
   const res = { getHeader() {}, setCookie() {}, setHeader() {} };
 
   // @ts-ignore - The type used in next-auth for the req object doesn't match, but it still works
-  const session = await originalGetServerSession(req, res, authOptions);
+  const session = await originalGetServerSession(req, res, authOptions); // This workaround is required because of a bug in next-auth please refer to this issue: https://github.com/nextauthjs/next-auth/issues/7486
 
-  // const session = getServerSession(authOptions);
   try {
     await fetch(
-      // `http://localhost:3000/api/send-message?type=${type}&message=${message}&userID=${session.user.id}`
-      `https://ccb1-87-97-7-48.ngrok-free.app/api/send-message?type=${type}&message=${message}&userID=${session.user.id}`
+      `http://localhost:3000/api/send-message?type=${type}&message=${message}&userID=${session.user.id}` //local
     );
-    // fetch with no cache
-    // await fetch(
-    //   `http://localhost:3000/api/send-message?type=${type}&message=${message}&userID=${session.user.id}`,
-    //   {
-    //     headers: {
-    //       'Cache-Control': 'no-cache',
-    //     },
-    //   }
-    // );
   } catch (err) {
     console.log('err', err);
   }
-}
-export async function attachCurrentToObjAndChildren(array) {
-  let arr = [];
-  array.forEach((item) => {
-    let obj = item;
-    obj.current = function (pathName) {
-      if (obj.href === pathName) return true;
-    };
-
-    arr.push(obj);
-  });
-  return arr;
 }
 export async function formDataToObj(formData) {
   const obj = {};
@@ -93,285 +70,3 @@ export async function formDataToObj(formData) {
   }
   return obj;
 }
-export async function saveImage(file, updateData) {
-  if (file?.size > 0) {
-    const folderName = updateData.id;
-    const fileName =
-      updateData.name.replace(/\s+/g, '-').toLowerCase() + '_' + Date.now() + file.name;
-
-    let filePath = `/images/products/${folderName}/${fileName}`;
-    let folderPath = `/public/images/products/${folderName}/`;
-
-    const savePath = await saveImageToServer(file, filePath, folderPath);
-
-    return `http://localhost:3000/${savePath}`;
-  }
-
-  return null;
-}
-export async function saveGallery(filesArray, product) {
-  if (filesArray[0].size > 0) {
-    const galleryImages = await Promise.all(
-      filesArray.map(async (fs) => {
-        return db.productImage.create({
-          data: {
-            name: fs.name,
-            path: await saveImage(fs, product),
-            productGallery: {
-              connect: {
-                id: product.id,
-              },
-            },
-          },
-        });
-      })
-    );
-    return galleryImages;
-  }
-}
-export async function processProductImage(file, product) {
-  if (file?.size > 0) {
-    // Save the product image
-    await db.productImage.create({
-      data: {
-        name: file.name,
-        path: await saveImage(file, product),
-        product: {
-          connect: {
-            id: product.id,
-          },
-        },
-      },
-    });
-  }
-}
-export async function processFormData(data) {
-  let createData = data;
-  if (data instanceof FormData) {
-    const requestData = await formDataToObj(data);
-    const file = data.get('imageFile');
-    const files = data.getAll('galleryFile');
-    const removeGallery = requestData.removeGallery;
-    delete requestData.galleryFile;
-    delete requestData.imageFile;
-    delete requestData.image;
-    delete requestData.removeGallery;
-    createData = requestData;
-
-    // if (createData.quantity) createData.quantity = Number(createData.quantity);
-    return { createData, file, files, requestData, removeGallery };
-  } else {
-    return createData;
-  }
-}
-export async function processImageReturnData(image, sourceModel) {
-  return {
-    name: image.name,
-    path: await saveImage(image, sourceModel),
-  };
-}
-export async function connectModel(sourceModel, targetModel, sourceData, targetData) {
-  let data = { id: targetData };
-  if (Array.isArray(targetData)) {
-    data = [];
-    for (const i of targetData) {
-      data.push({ id: i });
-    }
-  }
-  await db[sourceModel].update({
-    where: { id: sourceData.id },
-    data: {
-      [targetModel]: {
-        connect: data,
-      },
-    },
-  });
-}
-export async function handleRelations(
-  sourceModel,
-  targetModel,
-  sourceData,
-  targetData,
-  mode = 'connect',
-  isFile = false
-) {
-  let data = { id: targetData };
-
-  if (Array.isArray(targetData)) {
-    data = [];
-
-    for (const i of targetData) {
-      typeof i === 'string' && data.push({ id: i });
-      isFile && data.push({ path: await saveImage(i, sourceData), name: i.name }); // If file and array save the image here
-      !isFile &&
-        typeof i === 'object' &&
-        data.push({
-          [targetModel]: { connect: { id: i[`${targetModel}Id`] } },
-        });
-    }
-  } else {
-    // If file but not array save the image here
-    if (isFile) {
-      data = {
-        name: targetData.name,
-        path: await saveImage(targetData, sourceData),
-      };
-    }
-  }
-  {
-    await db[sourceModel].update({
-      where: { id: sourceData.id },
-      data: {
-        [targetModel]: {
-          [mode]: data,
-        },
-      },
-    });
-  }
-}
-
-// export async function connectCategories(category, subCategory, id, db) {
-//   if (Array.isArray(category)) {
-//     for (const cat of category) {
-//       await db.product.update({
-//         where: { id },
-//         data: {
-//           category: {
-//             connect: {
-//               id: cat,
-//             },
-//           },
-//         },
-//       });
-//     }
-//   } else if (category) {
-//     await db.product.update({
-//       where: { id },
-//       data: {
-//         category: {
-//           connect: {
-//             id: category,
-//           },
-//         },
-//       },
-//     });
-//   }
-
-//   if (Array.isArray(subCategory)) {
-//     for (const cat of subCategory) {
-//       await db.product.update({
-//         where: { id },
-//         data: {
-//           subCategory: {
-//             connect: {
-//               id: cat,
-//             },
-//           },
-//         },
-//       });
-//     }
-//   } else if (subCategory) {
-//     await db.product.update({
-//       where: { id },
-//       data: {
-//         subCategory: {
-//           connect: {
-//             id: subCategory,
-//           },
-//         },
-//       },
-//     });
-//   }
-// }
-// export async function disconnectCategory(categoryId, productId, db) {
-//   if (Array.isArray(categoryId)) {
-//     for (const cat of categoryId) {
-//       await db.product.update({
-//         where: { id: productId },
-//         data: {
-//           category: {
-//             disconnect: {
-//               id: cat,
-//             },
-//           },
-//         },
-//       });
-//     }
-//   } else if (categoryId) {
-//     await db.product.update({
-//       where: { id: productId },
-//       data: {
-//         category: {
-//           disconnect: {
-//             id: categoryId,
-//           },
-//         },
-//       },
-//     });
-//   }
-// }
-// export async function disconnectSubCategory(subCategoryId, productId, db) {
-//   if (Array.isArray(subCategoryId)) {
-//     for (const cat of subCategoryId) {
-//       await db.product.update({
-//         where: { id: productId },
-//         data: {
-//           subCategory: {
-//             disconnect: {
-//               id: cat,
-//             },
-//           },
-//         },
-//       });
-//     }
-//   } else if (subCategoryId) {
-//     await db.product.update({
-//       where: { id: productId },
-//       data: {
-//         subCategory: {
-//           disconnect: {
-//             id: subCategoryId,
-//           },
-//         },
-//       },
-//     });
-//   }
-// }
-// export async function disconnectGallery(removeGallery, productId, db) {
-//   const product = await db.product.findUnique({
-//     where: { id: productId },
-//     include: { gallery: true },
-//   });
-//   const galleryIds = product.gallery.map((image) => image.id);
-//   const removeIds = Array.isArray(removeGallery)
-//     ? removeGallery.map((image) => image.id || image)
-//     : removeGallery.split(',');
-//   const filteredIds = removeIds.filter((id) => galleryIds.includes(id));
-//   if (filteredIds.length > 1) {
-//     await db.productImage.deleteMany({ where: { id: { in: filteredIds } } });
-//   } else if (filteredIds.length === 1) {
-//     await db.productImage.delete({ where: { id: filteredIds[0] } });
-//   }
-// }
-// export async function processSupplier(requestData, otherData) {
-//   if (requestData?.supplier) {
-//     otherData.supplier = {
-//       set: {
-//         id: requestData.supplier,
-//       },
-//     };
-//   } else {
-//     String(requestData?.supplier) === '' && delete otherData.supplier;
-//   }
-// }
-// export async function processCreateSupplier(requestData, otherData) {
-//   if (String(requestData?.supplier) !== '') {
-//     otherData.supplier = {
-//       connect: {
-//         id: requestData.supplier,
-//       },
-//     };
-//   } else {
-//     String(requestData?.supplier) === '' && delete otherData.supplier;
-//   }
-// }
