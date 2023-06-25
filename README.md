@@ -16,13 +16,13 @@ Before you start, make sure you have Node.js and npm installed on your local mac
 Clone this repository on your local machine:
 
 ```bash
-git clone https://github.com/your-repo/next-prisma-app.git
+git clone https://github.com/weblab-studio-gh/next-skeleton.git
 ```
 
 Then navigate into the directory:
 
 ```bash
-cd next-prisma-app
+cd next-skeleton
 ```
 
 Install the project dependencies:
