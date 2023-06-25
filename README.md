@@ -74,8 +74,4 @@ This application uses custom servers for WebSocket communication to provide real
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
-
-> > > > > > > 7467ae40b317e2024993a62d116ccaba8bad8bce
